@@ -146,6 +146,21 @@ The unit tests cover the logic worth being sure about: the progression hint, Epl
 
 The end-to-end test runs the whole journey, sign in through to a finished workout, against a stubbed Supabase, so it needs no project, no secrets and no network.
 
+### Lighthouse
+
+Measured against a production build (`npm run build && npx next start`), mobile emulation:
+
+| Category | Score |
+| --- | --- |
+| Performance | 92 to 96 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+First Contentful Paint 0.8s, Largest Contentful Paint 2.0s, Cumulative Layout Shift 0.
+
+Lighthouse 12 removed the PWA category, so installability was checked directly: the service worker reaches `active`, the manifest carries name, short_name, `display: standalone`, a start_url and 192/512 icons in both `any` and `maskable`, and going offline then reloading a visited page still renders it while an unvisited route falls back to the offline page.
+
 ---
 
 ## Decisions worth knowing
@@ -161,4 +176,4 @@ The end-to-end test runs the whole journey, sign in through to a finished workou
 
 - The rest-timer notification fires only while the page is alive. iOS suspends background pages, so a timer that ends while the app is fully backgrounded there shows as finished when you return rather than buzzing at the moment.
 - Sync is last-write-wins per row. Two devices editing the same set at once keeps the later edit; there is no merge.
-- Lighthouse has not been run on a deployed build yet. It needs HTTPS and the production service worker.
+- Nothing has been checked on real hardware. The mobile fixes are correct by construction and were reviewed on a 390px viewport, but a phone is the only real proof.

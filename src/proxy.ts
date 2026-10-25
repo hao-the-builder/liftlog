@@ -97,10 +97,11 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Everything except static assets and the PWA files. The service worker
-     * and the manifest in particular must never be redirected: an install
-     * check that lands on /login breaks installability.
+     * Everything except static assets and the files that describe the site.
+     * The service worker and the manifest must never be redirected: an
+     * install check that lands on /login breaks installability. robots.txt
+     * was caught by this too, so crawlers were served a login page.
      */
-    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|icons/|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|manifest.webmanifest|robots.txt|sitemap.xml|icons/|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|txt|xml)$).*)",
   ],
 };

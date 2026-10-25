@@ -24,13 +24,24 @@
  * the app work offline. The worker only has to deliver the shell.
  */
 
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `liftlog-shell-${VERSION}`;
 const ASSET_CACHE = `liftlog-assets-${VERSION}`;
 const OFFLINE_URL = "/offline";
 
-/** Routes worth having before the first offline launch. */
-const SHELL_ROUTES = ["/today", "/progress", "/body", "/plan", OFFLINE_URL];
+/**
+ * What is precached at install, and what deliberately is not.
+ *
+ * Only the offline page. Precaching the app's own routes looks tempting and
+ * is wrong: install runs in whatever session the browser happens to be in,
+ * and while signed out every authenticated route redirects to /login. A
+ * redirected response cannot be served for a navigation at all, so the cache
+ * would be primed with entries that hard-fail exactly when they are needed.
+ *
+ * Routes are cached as they are actually visited, by the navigation handler
+ * below. That is what "works offline after first load" means here.
+ */
+const SHELL_ROUTES = [OFFLINE_URL];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -41,7 +52,7 @@ self.addEventListener("install", (event) => {
         SHELL_ROUTES.map(async (route) => {
           try {
             const response = await fetch(route, { cache: "reload" });
-            if (response.ok) await cache.put(route, response);
+            if (response.ok && !response.redirected) await cache.put(route, response);
           } catch {
             // Installed while offline. The runtime handlers will fill this in.
           }
@@ -105,7 +116,9 @@ async function handleNavigation(request) {
   const cache = await caches.open(SHELL_CACHE);
   try {
     const response = await fetch(request);
-    if (response.ok) cache.put(request, response.clone());
+    // Never cache a redirect for a navigation: replaying one from the cache
+    // fails the navigation outright rather than following it.
+    if (response.ok && !response.redirected) cache.put(request, response.clone());
     return response;
   } catch {
     const url = new URL(request.url);
