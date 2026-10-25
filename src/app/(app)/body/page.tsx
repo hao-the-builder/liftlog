@@ -72,7 +72,6 @@ export default function BodyPage() {
           <BodyweightChart points={smoothed} unit={unit} windowDays={MOVING_AVERAGE_DAYS} />
           <WeighInCard
             unit={unit}
-            today={today}
             existing={weights?.find((w) => w.date === today)?.weight ?? null}
             onSave={(value) => void recordBodyweight(userId, value, today)}
           />
@@ -117,12 +116,10 @@ function Headline({
 
 function WeighInCard({
   unit,
-  today,
   existing,
   onSave,
 }: {
   unit: string;
-  today: string;
   existing: number | null;
   onSave: (value: number) => void;
 }) {
@@ -157,9 +154,10 @@ function WeighInCard({
         </Button>
       </div>
       {existing !== null && (
+        // No tabular figures here: mono is for readouts and columns, and a
+        // monospaced decimal point inside a sentence reads as "81 . 7".
         <p className="mt-2 text-xs text-muted">
-          Logged <span className="tnum">{existing}</span> {unit} for {today}. Saving again
-          replaces it.
+          Logged {existing} {unit} today. Saving again replaces it.
         </p>
       )}
     </div>

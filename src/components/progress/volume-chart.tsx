@@ -35,7 +35,13 @@ import { MUSCLE_ORDER } from "@/lib/muscles";
  * a surface tint, not as a third series, because it is context rather than
  * data.
  */
-export function VolumeChart({ rows }: { rows: MuscleComparison[] }) {
+export function VolumeChart({
+  rows,
+  action,
+}: {
+  rows: MuscleComparison[];
+  action?: React.ReactNode;
+}) {
   const data = [...rows].sort(
     (a, b) => MUSCLE_ORDER.indexOf(a.muscle) - MUSCLE_ORDER.indexOf(b.muscle),
   );
@@ -46,6 +52,7 @@ export function VolumeChart({ rows }: { rows: MuscleComparison[] }) {
     <ChartCard
       title="Weekly sets per muscle"
       subtitle="A direct set counts 1, a secondary muscle counts a half."
+      action={action}
     >
       {data.length === 0 ? (
         <ChartEmpty>Nothing logged in the last two weeks.</ChartEmpty>
@@ -65,15 +72,17 @@ export function VolumeChart({ rows }: { rows: MuscleComparison[] }) {
                 margin={{ top: 4, right: 20, bottom: 4, left: 0 }}
                 barGap={2}
               >
-                <CartesianGrid {...gridProps} vertical horizontal={false} />
-                {/* The target band, behind everything, as structure. */}
+                {/* The target band goes first so it sits behind the grid and
+                    the bars. Rendered faintly on purpose: it is context, and at
+                    full strength it reads as a panel rather than a range. */}
                 <ReferenceArea
                   x1={WEEKLY_TARGET_MIN}
                   x2={WEEKLY_TARGET_MAX}
-                  fill={CHART.band}
-                  fillOpacity={1}
+                  fill={CHART.series}
+                  fillOpacity={0.07}
                   ifOverflow="extendDomain"
                 />
+                <CartesianGrid {...gridProps} vertical horizontal={false} />
                 <XAxis
                   type="number"
                   domain={[0, Math.ceil(peak / 5) * 5]}
@@ -83,7 +92,7 @@ export function VolumeChart({ rows }: { rows: MuscleComparison[] }) {
                 <YAxis
                   type="category"
                   dataKey="muscle"
-                  width={78}
+                  width={88}
                   interval={0}
                   {...axisProps}
                   tick={{ fill: "var(--color-muted)", fontSize: 11 }}

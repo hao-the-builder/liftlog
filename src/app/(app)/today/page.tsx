@@ -37,7 +37,7 @@ export default function TodayPage() {
   const templateName = templates?.find((t) => t.id === workout?.template_id)?.name;
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 pb-8">
+    <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col px-4 pb-8">
       {workout ? (
         <>
           <WorkoutHeader workout={workout} templateName={templateName} />
@@ -55,6 +55,9 @@ export default function TodayPage() {
       ) : (
         <>
           <IdleHeader />
+          {/* Pushes the card down so its buttons land in the thumb zone. The
+              screen is used one-handed, often with a bar in the other. */}
+          <div className="min-h-6 flex-1" />
           <StartCard
             next={next ?? null}
             hasTemplates={(templates?.length ?? 0) > 0}

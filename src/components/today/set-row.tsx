@@ -49,7 +49,7 @@ export function SetRow({
   return (
     <div
       className={clsx(
-        "relative flex items-center gap-2 py-3 pl-3 pr-2 transition-colors duration-200 ease-out",
+        "relative flex items-center gap-1 py-3 pl-2 pr-1.5 transition-colors duration-200 ease-out",
         logged && "bg-volt-deep/20",
       )}
     >
@@ -82,7 +82,7 @@ export function SetRow({
         )}
       </button>
 
-      <div className="flex flex-1 items-start justify-around gap-1">
+      <div className="flex min-w-0 flex-1 items-start justify-between gap-0.5">
         <NumberStepper
           label={unit}
           value={weight}
@@ -90,18 +90,28 @@ export function SetRow({
           precision={2}
           onChange={onWeight}
         />
-        <NumberStepper label="reps" value={reps} step={1} precision={0} onChange={onReps} />
+        <NumberStepper
+          label="reps"
+          value={reps}
+          step={1}
+          precision={0}
+          width="narrow"
+          onChange={onReps}
+        />
       </div>
 
+      {/* Straddles the row's top edge rather than sitting beside the check,
+          where it covered the rep count on a narrow phone. */}
+      {pr && logged && <PrBadge kind={pr} />}
+
       <div className="relative flex shrink-0 items-center">
-        {pr && logged && <PrBadge kind={pr} />}
         <button
           type="button"
           aria-label={logged ? `Undo set ${index + 1}` : `Log set ${index + 1}`}
           aria-pressed={logged}
           onClick={onToggleLogged}
           className={clsx(
-            "flex h-12 w-12 items-center justify-center rounded-full border",
+            "flex h-12 w-12 shrink-0 items-center justify-center rounded-full border",
             "transition-[transform,background-color,border-color,color] duration-150 ease-out",
             "active:scale-[0.92]",
             logged
@@ -128,7 +138,7 @@ export function SetRow({
  */
 function PrBadge({ kind }: { kind: PrKind }) {
   return (
-    <span className="pointer-events-none absolute right-full mr-1 flex items-center">
+    <span className="pointer-events-none absolute right-2 top-0 z-10 flex -translate-y-1/2 items-center">
       <span
         aria-hidden="true"
         className="animate-pr-bloom absolute inset-0 rounded-full bg-pr"

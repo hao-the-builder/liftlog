@@ -54,13 +54,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   // The profile is read live from IndexedDB, so onboarding and settings
   // changes appear the instant they are written, before any network round trip.
-  // Distinguishing "still loading" from "no row" matters: they are both
-  // undefined out of Dexie, and conflating them means a brand-new account
-  // never gets sent to onboarding.
-  const profile = useLiveQuery(
-    async () => (userId ? ((await db().profiles.get(userId)) ?? null) : null),
+  // Three states, and all three matter: undefined is "we do not know yet",
+  // null is "there is genuinely no profile row" (a brand-new account, which
+  // belongs in onboarding), and a row is a row.
+  //
+  // The result is tagged with the user it was read for because useLiveQuery
+  // keeps returning its previous value while it re-runs. Without the tag, the
+  // null from the signed-out pass is still on screen for a tick after the
+  // session arrives, which reads as "no profile" and bounces the user through
+  // onboarding to Today. That silently broke every deep link into the app.
+  const profileResult = useLiveQuery(
+    async () =>
+      userId ? { forUser: userId, row: (await db().profiles.get(userId)) ?? null } : undefined,
     [userId],
   );
+  const profile = profileResult?.forUser === userId ? profileResult.row : undefined;
 
   const sync = useLiveQuery(async () => {
     // Depending on syncTick re-reads the status after each sync attempt.

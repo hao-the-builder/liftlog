@@ -14,6 +14,8 @@ interface NumberStepperProps {
   precision?: number;
   suffix?: string;
   disabled?: boolean;
+  /** Weight needs room for "122.5"; reps never exceeds three digits. */
+  width?: "wide" | "narrow";
   onChange: (value: number) => void;
 }
 
@@ -34,6 +36,7 @@ export function NumberStepper({
   precision = 1,
   suffix,
   disabled = false,
+  width = "wide",
   onChange,
 }: NumberStepperProps) {
   // A local string so a half-typed "6." or "" is allowed while editing. It is
@@ -66,9 +69,9 @@ export function NumberStepper({
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-label font-medium uppercase tracking-wide text-faint">{label}</span>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         <StepButton label={`Decrease ${label}`} disabled={disabled || value <= min} onClick={() => bump(-1)}>
-          <Minus size={16} weight="bold" />
+          <Minus size={15} weight="bold" />
         </StepButton>
 
         <div className="relative">
@@ -89,8 +92,14 @@ export function NumberStepper({
               if (e.key === "Enter") e.currentTarget.blur();
             }}
             className={clsx(
-              "tnum w-[4.5ch] rounded-ctl bg-transparent px-1 py-0.5 text-center",
-              "text-readout font-bold text-text",
+              // min-w-0 matters: an <input> carries an intrinsic width of about
+              // twenty characters, so flex min-width:auto refuses to let it
+              // shrink and the row runs off the side of a phone. The widths
+              // below are measured to fit a 390px screen: index, two steppers
+              // and a 48px check, with the weight sized for "122.5".
+              "tnum min-w-0 rounded-ctl bg-transparent px-0.5 py-0.5 text-center",
+              "text-[1.375rem] leading-none font-bold tracking-tight text-text",
+              width === "wide" ? "w-[4.5rem]" : "w-[2.75rem]",
               "border border-transparent transition-colors duration-150 ease-out",
               "focus:border-line-strong focus:bg-surface-2 focus:outline-none",
               disabled && "text-faint",
@@ -103,7 +112,7 @@ export function NumberStepper({
           disabled={disabled || (max !== undefined && value >= max)}
           onClick={() => bump(1)}
         >
-          <Plus size={16} weight="bold" />
+          <Plus size={15} weight="bold" />
         </StepButton>
       </div>
       {suffix && <span className="text-[11px] text-faint">{suffix}</span>}
@@ -129,7 +138,9 @@ function StepButton({
       disabled={disabled}
       onClick={onClick}
       className={clsx(
-        "flex h-11 w-9 items-center justify-center rounded-ctl",
+        // 44px tall for the thumb, narrow so two steppers and a check fit
+        // across a 390px phone without the row scrolling sideways.
+        "flex h-11 w-7 shrink-0 items-center justify-center rounded-ctl",
         "border border-line bg-surface-2 text-muted",
         "transition-[transform,color,border-color] duration-150 ease-out",
         "active:scale-[0.94] hover:border-line-strong hover:text-text",
@@ -143,5 +154,7 @@ function StepButton({
 
 function format(value: number, precision: number): string {
   if (Number.isInteger(value)) return String(value);
-  return value.toFixed(precision).replace(/\.0+$/, "");
+  // toFixed then trim: 57.5 at precision 2 is "57.50", and the naive
+  // /\.0+$/ strip leaves it alone because it ends in "50", not "0".
+  return value.toFixed(precision).replace(/0+$/, "").replace(/\.$/, "");
 }

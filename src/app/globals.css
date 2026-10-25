@@ -41,9 +41,11 @@
      against this surface. These two steps were checked with the data-viz
      validator against #141715: both inside the dark lightness band, above the
      chroma floor, over 3:1 contrast, and a clean monotone ordinal pair for
-     this-week against last-week. Do not substitute --color-volt here. */
+     this-week against last-week. Do not substitute --color-volt here.
+     The dim step was stepped down again after looking at the rendered
+     chart: the two were separable on paper and too close on a phone. */
   --color-chart: #829f22;
-  --color-chart-dim: #55691a;
+  --color-chart-dim: #4a5a18;
 
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;

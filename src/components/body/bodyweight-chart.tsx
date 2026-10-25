@@ -39,9 +39,15 @@ export function BodyweightChart({
   unit: Unit;
   windowDays: number;
 }) {
+  // The first point's "average" is just itself, and the second is a pair, so
+  // drawing them makes the line open with a cliff that is an artefact of the
+  // window filling rather than anything the user did. The line starts where
+  // the window is actually full enough to mean something.
+  const MIN_SAMPLES = 3;
   const data = points.map((p) => ({
     ...p,
     t: new Date(`${p.date}T00:00:00`).getTime(),
+    average: p.samples >= MIN_SAMPLES ? p.average : null,
   }));
 
   return (
@@ -101,7 +107,9 @@ export function BodyweightChart({
                         })}
                         rows={[
                           { label: "Weigh-in", value: `${point.value.toFixed(1)} ${unit}` },
-                          { label: "Average", value: `${point.average.toFixed(1)} ${unit}` },
+                          ...(point.average !== null
+                            ? [{ label: "Average", value: `${point.average.toFixed(1)} ${unit}` }]
+                            : []),
                         ]}
                       />
                     );
@@ -114,6 +122,7 @@ export function BodyweightChart({
                   stroke={CHART.series}
                   strokeWidth={2}
                   dot={false}
+                  connectNulls={false}
                   activeDot={{
                     r: 5,
                     fill: CHART.series,

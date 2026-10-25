@@ -88,36 +88,27 @@ export default function ProgressPage() {
         <p className="mt-0.5 text-sm text-muted">What moved, and what has not.</p>
       </header>
 
-      {/* Volume section. Its own scope: always this week against last. */}
-      <section className="space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-label font-medium uppercase tracking-wide text-faint">Volume</h2>
-          <button
-            type="button"
-            onClick={() => setShowTable((v) => !v)}
-            aria-pressed={showTable}
-            className="flex min-h-9 items-center gap-1.5 rounded-ctl px-2.5 text-xs font-medium text-muted transition-colors duration-150 ease-out hover:bg-surface hover:text-text"
-          >
-            <Table size={14} />
-            {showTable ? "Chart" : "Table"}
-          </button>
-        </div>
+      {/* Volume. Its own scope: always this week against last week, so it
+          carries its own view toggle rather than sharing the range filter. */}
+      {showTable ? (
+        <ChartCard
+          title="Weekly sets per muscle"
+          subtitle="This week against last week."
+          action={<ViewToggle showTable={showTable} onToggle={setShowTable} />}
+        >
+          <div className="pb-2">
+            <VolumeTable rows={volumeRows} />
+          </div>
+        </ChartCard>
+      ) : (
+        <VolumeChart
+          rows={volumeRows}
+          action={<ViewToggle showTable={showTable} onToggle={setShowTable} />}
+        />
+      )}
 
-        {showTable ? (
-          <ChartCard title="Weekly sets per muscle" subtitle="This week against last week.">
-            <div className="pb-2">
-              <VolumeTable rows={volumeRows} />
-            </div>
-          </ChartCard>
-        ) : (
-          <VolumeChart rows={volumeRows} />
-        )}
-      </section>
-
-      {/* Exercise section. One control row above everything it scopes. */}
-      <section className="mt-8 space-y-3">
-        <h2 className="text-label font-medium uppercase tracking-wide text-faint">Exercise</h2>
-
+      {/* Exercise. One control row above everything it scopes. */}
+      <section className="mt-6 space-y-3">
         <div className="flex flex-col gap-2">
           <button
             type="button"
@@ -159,5 +150,25 @@ export default function ProgressPage() {
         }}
       />
     </div>
+  );
+}
+
+function ViewToggle({
+  showTable,
+  onToggle,
+}: {
+  showTable: boolean;
+  onToggle: (value: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(!showTable)}
+      aria-pressed={showTable}
+      className="-mt-1 flex min-h-9 shrink-0 items-center gap-1.5 rounded-ctl px-2 text-xs font-medium text-muted transition-colors duration-150 ease-out hover:bg-surface-2 hover:text-text"
+    >
+      <Table size={14} />
+      {showTable ? "Chart" : "Table"}
+    </button>
   );
 }
