@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Liftlog design tokens.
+   Dark neon, read in a dim gym at arm's length. Near-black steel base, one
+   working accent (volt), one accent reserved entirely for records (pr).
+   See DESIGN.md for the reasoning behind every value here.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces. Never pure #000: it crushes OLED detail and kills the glow. */
+  --color-bg: #0b0d0c;
+  --color-surface: #141715;
+  --color-surface-2: #1d211e;
+  --color-surface-3: #262b28;
+
+  /* Hairlines are the only divider in the app. No card borders. */
+  --color-line: #2a2f2c;
+  --color-line-strong: #3a403c;
+
+  /* Text. All three pass 4.5:1 on --color-bg. */
+  --color-text: #f2f5f1;
+  --color-muted: #8a918c;
+  --color-faint: #767d78;
+
+  /* The one working accent: logged set, running timer, progress. */
+  --color-volt: #d4ff3f;
+  --color-volt-dim: #9fc02e;
+  --color-volt-deep: #3f4d18;
+
+  /* Records only. This colour appears nowhere else in the app. */
+  --color-pr: #ff2e88;
+  --color-pr-dim: #c01f66;
+  --color-pr-deep: #4d1030;
+
+  --color-danger: #ff5a4e;
+  --color-danger-deep: #4d1a16;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  /* Two radii, one rule: controls 6, surfaces 14, circles full. */
+  --radius-ctl: 6px;
+  --radius-surface: 14px;
+
+  /* Built-in CSS easings are too weak. These are the only curves in the app. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Readouts. Fixed rem scale, ratio ~1.2, no fluid clamp sizing. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.08em;
+  --text-readout: 2rem;
+  --text-readout--line-height: 1;
+  --text-readout--letter-spacing: -0.03em;
+  --text-timer: 3.75rem;
+  --text-timer--line-height: 1;
+  --text-timer--letter-spacing: -0.04em;
+}
+
+/* ---------------------------------------------------------------------------
+   Mobile platform layer. These are the lines that stop the app reading as a
+   website on a phone. Every one is here for a documented reason.
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    /* iOS and Android paint a grey flash over anything with a click handler. */
+    -webkit-tap-highlight-color: transparent;
+    /* No font inflation when the phone rotates to landscape. */
+    -webkit-text-size-adjust: 100%;
+    /* Kill pull-to-refresh and whole-page rubber banding. This is an app. */
+    overscroll-behavior: none;
+    background-color: var(--color-bg);
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    /* No horizontal scroll, ever. */
+    overflow-x: hidden;
+  }
+
+  /* Under 16px iOS zooms the page on focus and never zooms back out. */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Controls are not content. Content stays selectable. */
+  button,
+  [role="button"],
+  .tappable {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Every numeral the user reads is tabular so digits never shift width. */
+  .tnum {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* The browser surfaces we did not draw still belong to the design. */
+  ::selection {
+    background-color: var(--color-volt-deep);
+    color: var(--color-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-volt);
+    outline-offset: 2px;
+  }
+
+  ::placeholder {
+    color: var(--color-faint);
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-volt);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+}
+
+@layer utilities {
+  /* Safe areas. Without viewport-fit=cover these all resolve to 0px. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Inner scrollers keep their own bounce but never move the page behind. */
+  .scroll-contain {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* The glow budget. Four things in the whole app may use these, and nothing
+     else: a set at the instant it is logged, the running timer, progress, and
+     a personal record. Each is a real offset shadow plus a tight bloom, not a
+     zero-offset halo. */
+  .glow-volt {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 0 0 1px var(--color-volt-dim),
+      0 0 16px -4px var(--color-volt);
+  }
+  .glow-pr {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 0 0 1px var(--color-pr-dim),
+      0 0 22px -4px var(--color-pr);
+  }
+  .text-glow-volt {
+    text-shadow: 0 0 18px rgb(212 255 63 / 0.35);
+  }
+  .text-glow-pr {
+    text-shadow: 0 0 18px rgb(255 46 136 / 0.45);
+  }
+}
+
+/* Reduced motion means gentler, not zero: colour and opacity still carry
+   meaning, movement does not. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.12s !important;
+    scroll-behavior: auto !important;
+  }
+}
