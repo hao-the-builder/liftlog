@@ -42,27 +42,49 @@ export interface ExercisePrs {
 const isCounted = (s: { reps: number; weight: number; isWarmup?: boolean }) =>
   !s.isWarmup && s.reps >= 1 && s.weight > 0;
 
-/** Folds a set of history rows into the three records we compare against. */
-export function summarisePrs(history: HistorySet[]): ExercisePrs {
-  let bestWeight: number | null = null;
-  let bestE1RM: number | null = null;
-  const bestRepsByWeight = new Map<number, number>();
+/** Adds one set to a running summary. Mutates and returns it. */
+export function foldSet(prs: ExercisePrs, set: HistorySet): ExercisePrs {
+  if (!isCounted(set)) return prs;
 
-  for (const set of history) {
-    if (!isCounted(set)) continue;
+  if (prs.bestWeight === null || set.weight > prs.bestWeight) prs.bestWeight = set.weight;
 
-    if (bestWeight === null || set.weight > bestWeight) bestWeight = set.weight;
+  const e = epley1RM(set.weight, set.reps);
+  if (e !== null && (prs.bestE1RM === null || e > prs.bestE1RM)) prs.bestE1RM = e;
 
-    const e = epley1RM(set.weight, set.reps);
-    if (e !== null && (bestE1RM === null || e > bestE1RM)) bestE1RM = e;
-
-    const previous = bestRepsByWeight.get(set.weight);
-    if (previous === undefined || set.reps > previous) {
-      bestRepsByWeight.set(set.weight, set.reps);
-    }
+  const previous = prs.bestRepsByWeight.get(set.weight);
+  if (previous === undefined || set.reps > previous) {
+    prs.bestRepsByWeight.set(set.weight, set.reps);
   }
 
-  return { bestWeight, bestE1RM, bestRepsByWeight };
+  return prs;
+}
+
+/** Folds a set of history rows into the three records we compare against. */
+export function summarisePrs(history: HistorySet[]): ExercisePrs {
+  const prs: ExercisePrs = {
+    bestWeight: null,
+    bestE1RM: null,
+    bestRepsByWeight: new Map<number, number>(),
+  };
+  for (const set of history) foldSet(prs, set);
+  return prs;
+}
+
+/**
+ * Replays a session set by set against the history that preceded it.
+ *
+ * Needed because a record set earlier in the same session raises the bar for
+ * the ones after it: going 60x8 then 62.5x8 is two weight records, but 60x8
+ * then 60x8 again is one. Used by the finish summary, which has to work even
+ * if the app was reloaded mid-workout and the in-memory list is gone.
+ */
+export function replayPrs(historyBefore: HistorySet[], session: PrCandidate[]): PrKind[][] {
+  const running = summarisePrs(historyBefore);
+  return session.map((set) => {
+    const hits = detectPrs(set, running);
+    foldSet(running, set);
+    return hits;
+  });
 }
 
 /**

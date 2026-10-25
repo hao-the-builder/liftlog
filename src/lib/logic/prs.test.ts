@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   detectPrsAgainstHistory,
   primaryPr,
+  replayPrs,
   summarisePrs,
   type HistorySet,
 } from "./prs";
@@ -113,5 +114,52 @@ describe("primaryPr", () => {
 
   it("returns null when nothing was hit", () => {
     expect(primaryPr([])).toBeNull();
+  });
+});
+
+describe("replayPrs", () => {
+  it("raises the bar as the session goes on", () => {
+    // Both sets beat the old record of 52.5, but only the first beats nothing
+    // and the second has to beat the first.
+    const hits = replayPrs(history, [
+      { weight: 55, reps: 5 },
+      { weight: 54, reps: 5 },
+    ]);
+    expect(hits[0]).toContain("weight");
+    expect(hits[1]).not.toContain("weight");
+  });
+
+  it("counts a second record later in the same session", () => {
+    const hits = replayPrs(history, [
+      { weight: 55, reps: 5 },
+      { weight: 57.5, reps: 5 },
+    ]);
+    expect(hits[0]).toContain("weight");
+    expect(hits[1]).toContain("weight");
+  });
+
+  it("lets a set set the baseline for reps at a weight it just introduced", () => {
+    // 51 kg is new, so the first set cannot be a reps record. The second,
+    // at the same load, now has something to beat.
+    const hits = replayPrs(history, [
+      { weight: 51, reps: 5 },
+      { weight: 51, reps: 6 },
+    ]);
+    expect(hits[0]).not.toContain("reps-at-weight");
+    expect(hits[1]).toContain("reps-at-weight");
+  });
+
+  it("ignores warm-ups when replaying", () => {
+    const hits = replayPrs(history, [
+      { weight: 200, reps: 5, isWarmup: true },
+      { weight: 55, reps: 5 },
+    ]);
+    expect(hits[0]).toEqual([]);
+    expect(hits[1]).toContain("weight");
+  });
+
+  it("returns one entry per session set", () => {
+    expect(replayPrs(history, [])).toEqual([]);
+    expect(replayPrs([], [{ weight: 40, reps: 5 }])).toHaveLength(1);
   });
 });
