@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/field";
 import { SupabaseNotConfigured } from "@/components/auth/not-configured";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { useHydrated } from "@/lib/hooks/use-now";
 
 export default function LoginPage() {
   if (!isSupabaseConfigured) return <SupabaseNotConfigured />;
@@ -27,6 +28,8 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keeps the form unsubmittable until its handlers are attached.
+  const hydrated = useHydrated();
 
   const error = formError ?? linkError;
 
@@ -94,7 +97,7 @@ function LoginForm() {
           </p>
         )}
 
-        <Button type="submit" variant="primary" size="lg" block disabled={busy}>
+        <Button type="submit" variant="primary" size="lg" block disabled={busy || !hydrated}>
           {busy ? "Signing in" : "Sign in"}
         </Button>
       </form>

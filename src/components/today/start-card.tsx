@@ -31,7 +31,7 @@ export function StartCard({ next, hasTemplates, onStart, onRestDone }: Props) {
     return (
       <section className="rounded-surface bg-surface px-5 py-8 text-center">
         <CalendarBlank size={28} weight="duotone" className="mx-auto text-volt" />
-        <h2 className="mt-3 text-lg font-semibold">No plan yet</h2>
+        <h2 className="mt-3 text-lg font-semibold">Nothing planned yet</h2>
         <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted">
           Build your split first. Any number of days, any order, rest days wherever you want
           them.

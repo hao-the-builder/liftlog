@@ -7,12 +7,15 @@ import { Field } from "@/components/ui/field";
 import { SupabaseNotConfigured } from "@/components/auth/not-configured";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { useHydrated } from "@/lib/hooks/use-now";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keeps the form unsubmittable until its handlers are attached.
+  const hydrated = useHydrated();
 
   if (!isSupabaseConfigured) return <SupabaseNotConfigured />;
 
@@ -75,7 +78,7 @@ export default function ForgotPasswordPage() {
             {error}
           </p>
         )}
-        <Button type="submit" variant="primary" size="lg" block disabled={busy}>
+        <Button type="submit" variant="primary" size="lg" block disabled={busy || !hydrated}>
           {busy ? "Sending" : "Send reset link"}
         </Button>
       </form>

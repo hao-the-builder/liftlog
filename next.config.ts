@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Dev only. Next 16 blocks its own dev assets when the host in the URL is
+  // not one it expects, which silently stops the page hydrating. The e2e
+  // suite and phone testing over the LAN both hit it by IP.
+  // The dev overlay floats above the bottom tab bar and swallows taps there,
+  // both for a human testing on a phone and for the e2e suite.
+  devIndicators: false,
+  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.0.0/16", "10.0.0.0/8"],
+
   // Cache Components and Partial Prefetching are deliberately off.
   // Liftlog is local-first: every authenticated screen reads from IndexedDB in a
   // Client Component, so there is no server-rendered session-derived data worth

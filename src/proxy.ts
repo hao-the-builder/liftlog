@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -53,9 +54,25 @@ export async function proxy(request: NextRequest) {
 
   // getUser revalidates the token with Supabase rather than trusting the
   // cookie's contents, and refreshes it when it is close to expiry.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  //
+  // A network failure is treated differently from a rejected session. If
+  // Supabase cannot be reached at all, the request is let through rather than
+  // bounced to /login: this is a local-first app, and an outage must not lock
+  // someone out of a workout that is already on their phone. Nothing is
+  // exposed by doing so, because the gate here is optimistic either way. Row
+  // Level Security decides what any request can actually read, the app shell
+  // re-checks the session on the client, and no session means no data.
+  //
+  // A real "this token is not valid" answer still redirects, as it should.
+  let user = null;
+  try {
+    const result = await supabase.auth.getUser();
+    // supabase-js returns transport failures rather than throwing them.
+    if (result.error && isAuthRetryableFetchError(result.error)) return response;
+    user = result.data.user;
+  } catch {
+    return response;
+  }
 
   const { pathname } = request.nextUrl;
 

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { TabBar } from "@/components/shell/tab-bar";
 import { RestTimerBar } from "@/components/shell/rest-timer-bar";
 import { SyncIndicator } from "@/components/shell/sync-indicator";
+import { InstallHint } from "@/components/pwa/install-hint";
 import { useSession } from "@/components/providers/session-provider";
 
 /**
@@ -23,7 +24,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { loading, userId, profile } = useSession();
 
-  const needsOnboarding = Boolean(userId) && profile !== undefined && !profile.onboarded_at;
+  // undefined means the local read has not finished; null means there is
+  // genuinely no profile yet, which is what sends a new account to setup.
+  const needsOnboarding =
+    Boolean(userId) && profile !== undefined && (profile === null || !profile.onboarded_at);
 
   useEffect(() => {
     if (loading) return;
@@ -38,6 +42,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
+      <InstallHint />
       <SyncIndicator />
       <main className="min-h-0 flex-1 overflow-y-auto scroll-contain pt-safe">{children}</main>
       <RestTimerBar />

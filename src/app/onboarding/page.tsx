@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -24,7 +24,13 @@ export default function OnboardingPage() {
   const [busy, setBusy] = useState(false);
 
   // Someone who already finished setup should not be able to land back here.
+  //
+  // The ref matters: saving the profile sets onboarded_at, the live query
+  // picks it up, and without this the guard would fire and send the user to
+  // Today, racing past the Plan editor that setup is supposed to end on.
+  const justSaved = useRef(false);
   useEffect(() => {
+    if (justSaved.current) return;
     if (!loading && profile?.onboarded_at) router.replace("/today");
   }, [loading, profile?.onboarded_at, router]);
 
@@ -43,6 +49,7 @@ export default function OnboardingPage() {
 
     setBusy(true);
     setError(null);
+    justSaved.current = true;
 
     const row: ProfileRow = {
       id: userId,

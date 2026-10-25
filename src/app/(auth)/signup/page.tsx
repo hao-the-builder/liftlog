@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/field";
 import { SupabaseNotConfigured } from "@/components/auth/not-configured";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { useHydrated } from "@/lib/hooks/use-now";
 
 const MIN_PASSWORD = 8;
 
@@ -17,6 +18,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keeps the form unsubmittable until its handlers are attached.
+  const hydrated = useHydrated();
 
   if (!isSupabaseConfigured) return <SupabaseNotConfigured />;
 
@@ -96,7 +99,7 @@ export default function SignupPage() {
           </p>
         )}
 
-        <Button type="submit" variant="primary" size="lg" block disabled={busy}>
+        <Button type="submit" variant="primary" size="lg" block disabled={busy || !hydrated}>
           {busy ? "Creating account" : "Create account"}
         </Button>
       </form>

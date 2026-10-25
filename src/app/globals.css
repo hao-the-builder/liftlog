@@ -36,6 +36,15 @@
   --color-danger: #ff5a4e;
   --color-danger-deep: #4d1a16;
 
+  /* Chart marks are a stepped-down volt, not the UI accent.
+     The raw accent sits at OKLCH L 0.94, which blooms as a fill or a stroke
+     against this surface. These two steps were checked with the data-viz
+     validator against #141715: both inside the dark lightness band, above the
+     chroma floor, over 3:1 contrast, and a clean monotone ordinal pair for
+     this-week against last-week. Do not substitute --color-volt here. */
+  --color-chart: #829f22;
+  --color-chart-dim: #55691a;
+
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
 

@@ -6,6 +6,7 @@ import { Field } from "@/components/ui/field";
 import { SupabaseNotConfigured } from "@/components/auth/not-configured";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { useHydrated } from "@/lib/hooks/use-now";
 
 const MIN_PASSWORD = 8;
 
@@ -14,6 +15,8 @@ export default function ResetPasswordPage() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keeps the form unsubmittable until its handlers are attached.
+  const hydrated = useHydrated();
   const [ready, setReady] = useState<boolean | null>(null);
 
   // Reaching this page means the recovery link has already been exchanged for
@@ -103,7 +106,7 @@ export default function ResetPasswordPage() {
             {error}
           </p>
         )}
-        <Button type="submit" variant="primary" size="lg" block disabled={busy || ready === null}>
+        <Button type="submit" variant="primary" size="lg" block disabled={busy || !hydrated || ready === null}>
           {busy ? "Saving" : "Save password"}
         </Button>
       </form>

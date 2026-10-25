@@ -21,7 +21,8 @@ import { readSyncStatus, syncNow, type SyncStatus } from "@/lib/db/sync";
 interface SessionValue {
   userId: string | null;
   email: string | null;
-  profile: ProfileRow | undefined;
+  /** undefined while the local read is in flight, null when there is no row. */
+  profile: ProfileRow | null | undefined;
   loading: boolean;
   online: boolean;
   sync: SyncStatus;
@@ -53,8 +54,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   // The profile is read live from IndexedDB, so onboarding and settings
   // changes appear the instant they are written, before any network round trip.
+  // Distinguishing "still loading" from "no row" matters: they are both
+  // undefined out of Dexie, and conflating them means a brand-new account
+  // never gets sent to onboarding.
   const profile = useLiveQuery(
-    async () => (userId ? await db().profiles.get(userId) : undefined),
+    async () => (userId ? ((await db().profiles.get(userId)) ?? null) : null),
     [userId],
   );
 
