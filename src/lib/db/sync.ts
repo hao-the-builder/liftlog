@@ -43,6 +43,15 @@ export interface SyncStatus {
   stalled: boolean;
   lastError: string | null;
   lastSyncedAt: string | null;
+  /**
+   * What the queue is stuck on. Carried so the indicator can name the problem
+   * instead of only reporting that there is one: a stall is almost always a
+   * schema or permission fault on one specific table, and that is the single
+   * most useful fact to put in front of whoever has to fix it.
+   */
+  headTable: SyncableTable | null;
+  headOp: "upsert" | "delete" | null;
+  attempts: number;
 }
 
 /** Beginning of time, used the first time a table is pulled. */
@@ -259,5 +268,8 @@ export async function readSyncStatus(): Promise<SyncStatus> {
     stalled: (head?.attempts ?? 0) >= 3,
     lastError: head?.lastError ?? null,
     lastSyncedAt: (await getMeta<string>("lastSyncedAt")) ?? null,
+    headTable: head?.table ?? null,
+    headOp: head?.op ?? null,
+    attempts: head?.attempts ?? 0,
   };
 }

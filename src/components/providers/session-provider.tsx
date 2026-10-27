@@ -26,6 +26,8 @@ interface SessionValue {
   loading: boolean;
   online: boolean;
   sync: SyncStatus;
+  /** Drains the queue now. Exposed so a stalled sync can be retried by hand. */
+  retrySync: () => Promise<void>;
   signOut: () => Promise<void>;
   refresh: () => void;
 }
@@ -39,6 +41,9 @@ const EMPTY_STATUS: SyncStatus = {
   stalled: false,
   lastError: null,
   lastSyncedAt: null,
+  headTable: null,
+  headOp: null,
+  attempts: 0,
 };
 
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -188,10 +193,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       loading,
       online,
       sync,
+      retrySync: runSync,
       signOut,
       refresh: () => router.refresh(),
     }),
-    [userId, email, profile, loading, online, sync, signOut, router],
+    [userId, email, profile, loading, online, sync, runSync, signOut, router],
   );
 
   return <SessionContext value={value}>{children}</SessionContext>;
