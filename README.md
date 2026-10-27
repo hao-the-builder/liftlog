@@ -131,7 +131,7 @@ Supabase is the source of truth. The phone is the fast path.
 - Deletes write a tombstone through `delete_row()`, so other devices learn about them.
 - The queue is drained in order and stops on a failure rather than skipping, because a set log is meaningless without its workout.
 - "Offline, will sync" appears only when the queue is non-empty **and** the device is offline.
-- Signing out deletes the local database. So does signing in as a different user on the same device.
+- Signing out deletes the local database, unless the queue still holds unsynced work, in which case it is kept so nothing is lost and flushed on the next sign-in. Signing in as a different user on the same device always clears it.
 
 ---
 

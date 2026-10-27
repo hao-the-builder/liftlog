@@ -178,6 +178,12 @@ export default function SettingsPage() {
               <SignOut size={16} />
               Sign out
             </button>
+            {sync.pending > 0 && (
+              <p className="px-4 py-3 text-xs text-faint">
+                {sync.pending} unsynced change{sync.pending === 1 ? "" : "s"} will stay on this
+                phone and go up when you sign back in.
+              </p>
+            )}
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}

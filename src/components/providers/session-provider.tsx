@@ -175,7 +175,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         }
         await getSupabaseBrowserClient().auth.signOut();
       }
-      await clearLocalDatabase();
+
+      // Clearing is for privacy on a shared device, and it must never cost
+      // someone their training. If the queue did not drain, the local copy is
+      // the only copy, so it stays: signing out is not a destructive act and
+      // must not quietly become one when the server is refusing writes. A
+      // different account signing in on this device still wipes it, which is
+      // where the privacy guarantee actually lives.
+      const unsynced = await db().outbox.count();
+      if (unsynced === 0) await clearLocalDatabase();
     } finally {
       signingOut.current = false;
       // A full reload rather than a route push: every live query in the tree
