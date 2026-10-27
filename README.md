@@ -67,6 +67,7 @@ npx supabase db push
 | `0003_exercise_library.sql` | 80 shared exercises on a fixed muscle vocabulary |
 | `0004_last_write_wins.sql` | Makes a later edit win over an earlier one that synced after it |
 | `0005_deletions.sql` | Tombstones, so a delete on one device reaches the others |
+| `0006_deletions_write_grant.sql` | Lets `delete_row()` write the tombstone it records. Required: without it every delete fails |
 
 They are idempotent: running them twice is safe.
 
