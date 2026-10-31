@@ -20,7 +20,11 @@ const VARIANTS: Record<Variant, string> = {
   primary: "bg-volt text-bg font-semibold hover:bg-volt-dim disabled:bg-surface-3 disabled:text-faint",
   secondary: "bg-surface-2 text-text border border-line hover:border-line-strong disabled:text-faint",
   ghost: "text-muted hover:text-text disabled:text-faint",
-  danger: "bg-danger-deep text-danger border border-danger/40 hover:border-danger disabled:text-faint",
+  // Solid, not tinted. This variant only ever appears on the confirm step of
+  // something irreversible, and a destructive action that looks like every
+  // other button is how people delete things they meant to keep. Same shape
+  // as primary, because it is the primary action of that sheet.
+  danger: "bg-danger text-bg font-semibold hover:bg-danger-dim disabled:bg-surface-3 disabled:text-faint",
 };
 
 const SIZES: Record<Size, string> = {

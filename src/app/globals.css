@@ -34,6 +34,7 @@
   --color-pr-deep: #4d1030;
 
   --color-danger: #ff5a4e;
+  --color-danger-dim: #e6483d;
   --color-danger-deep: #4d1a16;
 
   /* Chart marks are a stepped-down volt, not the UI accent.

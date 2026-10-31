@@ -53,6 +53,11 @@ export interface TemplateExerciseRow {
   rest_seconds: number;
   /** Null falls back to profiles.default_increment. */
   increment: number | null;
+  /**
+   * What an unlogged set opens at when there is no history to copy. Null
+   * means no opinion, which seeds 0. Never consulted once a set is logged.
+   */
+  start_weight: number | null;
   notes: string | null;
   created_at: string;
   updated_at: string;

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { CaretDown, Trash } from "@phosphor-icons/react/dist/ssr";
 import clsx from "clsx";
 import { ReorderButtons } from "./reorder-buttons";
+import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { localPut } from "@/lib/db/outbox";
 import type { TemplateExerciseRow, Unit } from "@/lib/types/database";
 
@@ -22,8 +24,9 @@ interface Props {
  * One exercise in a day.
  *
  * Collapsed it shows the prescription in one line; expanded it exposes every
- * number, including the weight step, which is per exercise because a cable
- * stack and a plate-loaded leg press do not move in the same jumps.
+ * number, including the weight step and the starting weight, both of which
+ * are per exercise because a cable stack and a plate-loaded leg press do not
+ * move in the same jumps or start at the same load.
  */
 export function PlanExerciseRow({
   row,
@@ -36,6 +39,7 @@ export function PlanExerciseRow({
   onRemove,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   const patch = (changes: Partial<TemplateExerciseRow>) =>
     void localPut("template_exercises", { ...row, ...changes } as never);
@@ -61,6 +65,13 @@ export function PlanExerciseRow({
               <span className="text-faint">|</span> <span className="tnum">{row.rest_seconds}</span>s
               rest <span className="text-faint">|</span> +
               <span className="tnum">{row.increment ?? defaultIncrement}</span> {unit}
+              {row.start_weight !== null && (
+                <>
+                  {" "}
+                  <span className="text-faint">|</span> from{" "}
+                  <span className="tnum">{row.start_weight}</span> {unit}
+                </>
+              )}
             </p>
           </div>
           <CaretDown
@@ -107,6 +118,19 @@ export function PlanExerciseRow({
             />
           </div>
 
+          <OptionalNumber
+            label={`Starting weight (${unit})`}
+            value={row.start_weight}
+            min={0}
+            step={row.increment ?? defaultIncrement}
+            helper={
+              row.start_weight === null
+                ? "Blank opens the first set at 0. Set it once and every new set starts here until you have history."
+                : "Only seeds a set you have not logged. Last session always wins."
+            }
+            onChange={(start_weight) => patch({ start_weight })}
+          />
+
           <SmallNumber
             label={`Weight step (${unit})`}
             value={row.increment ?? defaultIncrement}
@@ -133,7 +157,7 @@ export function PlanExerciseRow({
 
           <button
             type="button"
-            onClick={onRemove}
+            onClick={() => setConfirmRemove(true)}
             className="flex min-h-11 items-center gap-2 text-sm text-muted transition-colors duration-150 ease-out hover:text-danger"
           >
             <Trash size={15} />
@@ -141,7 +165,94 @@ export function PlanExerciseRow({
           </button>
         </div>
       )}
+
+      <Sheet
+        open={confirmRemove}
+        title={`Remove ${exerciseName}?`}
+        onClose={() => setConfirmRemove(false)}
+        footer={
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="danger"
+              size="lg"
+              block
+              onClick={() => {
+                setConfirmRemove(false);
+                onRemove();
+              }}
+            >
+              Remove from this day
+            </Button>
+            <Button size="lg" block onClick={() => setConfirmRemove(false)}>
+              Keep it
+            </Button>
+          </div>
+        }
+      >
+        <p className="px-4 py-5 text-sm text-muted">
+          It comes out of this day along with its sets, reps and starting weight. The exercise
+          stays in your library, and sets you already logged against it stay in your history.
+        </p>
+      </Sheet>
     </section>
+  );
+}
+
+/**
+ * A number that is allowed to be absent.
+ *
+ * Clearing the field means null, which is a real answer here and not an
+ * error: "I have no starting weight for this" is different from "the starting
+ * weight is zero", and only one of them should put a 0 on the screen.
+ */
+function OptionalNumber({
+  label,
+  value,
+  min,
+  step,
+  helper,
+  onChange,
+}: {
+  label: string;
+  value: number | null;
+  min: number;
+  step: number;
+  helper?: string;
+  onChange: (value: number | null) => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+
+  const commit = (text: string) => {
+    setDraft(null);
+    const trimmed = text.trim();
+    if (trimmed === "") {
+      onChange(null);
+      return;
+    }
+    const parsed = Number(trimmed);
+    if (!Number.isFinite(parsed)) return;
+    onChange(Math.max(min, parsed));
+  };
+
+  return (
+    <label className="flex flex-col gap-2">
+      <span className="text-label font-medium uppercase tracking-wide text-muted">{label}</span>
+      <input
+        type="text"
+        inputMode="decimal"
+        value={draft ?? (value === null ? "" : String(value))}
+        step={step}
+        placeholder="Not set"
+        onChange={(e) => setDraft(e.target.value.replace(/[^0-9.]/g, ""))}
+        onFocus={(e) => e.currentTarget.select()}
+        onBlur={(e) => commit(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+        }}
+        className="tnum w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text placeholder:text-faint focus:border-volt-dim focus:outline-none"
+      />
+      {helper && <span className="text-xs text-faint">{helper}</span>}
+    </label>
   );
 }
 

@@ -22,6 +22,8 @@ export interface PlannedExercise {
   repMax: number;
   restSeconds: number;
   increment: number;
+  /** Seeds the first session, before there is a last session to copy. */
+  startWeight: number | null;
   notes: string | null;
 }
 
@@ -94,14 +96,17 @@ export function ExerciseBlock({ workoutId, userId, unit, plan, onLogged, onSwap,
     (index: number): DraftSet => {
       const previous = last?.sets ?? [];
       const match = previous[index] ?? previous[previous.length - 1];
+      // History first, then the planned starting weight, then nothing. The
+      // order matters: a starting weight is where the exercise began, not
+      // where it should stay, so real sets always win over it.
       return {
-        weight: match?.weight ?? 0,
+        weight: match?.weight ?? plan.startWeight ?? 0,
         reps: match?.reps ?? plan.repMax,
         isWarmup: false,
         isDropSet: false,
       };
     },
-    [last, plan.repMax],
+    [last, plan.repMax, plan.startWeight],
   );
 
   const valueFor = (index: number): DraftSet => {

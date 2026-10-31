@@ -67,6 +67,7 @@ export default function TemplateEditorPage() {
       rep_max: 12,
       rest_seconds: 120,
       increment: null,
+      start_weight: null,
       notes: null,
       created_at: nowIso(),
       updated_at: nowIso(),

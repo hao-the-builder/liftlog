@@ -121,6 +121,7 @@ function ActiveSession({
         repMax: row.rep_max,
         restSeconds: row.rest_seconds,
         increment: resolveIncrement(row.increment, defaultIncrement),
+        startWeight: row.start_weight,
         notes: row.notes,
       });
     }
@@ -234,6 +235,7 @@ function adhocPlan(exercise: ExerciseRow, increment: number): PlannedExercise {
     repMax: 12,
     restSeconds: 120,
     increment,
+    startWeight: null,
     notes: null,
   };
 }
