@@ -45,7 +45,7 @@ export function PlanExerciseRow({
     void localPut("template_exercises", { ...row, ...changes } as never);
 
   return (
-    <section className="rounded-surface bg-surface">
+    <section className="pane rounded-surface">
       <div className="flex items-center gap-1 pl-1 pr-2">
         <ReorderButtons index={index} total={total} label={exerciseName} onMove={onMove} />
 
@@ -56,7 +56,7 @@ export function PlanExerciseRow({
           className="flex min-h-16 flex-1 items-center justify-between gap-3 py-3 text-left"
         >
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-text">{exerciseName}</p>
+            <p className="truncate text-sm font-medium text-text">{exerciseName}</p>
             <p className="mt-0.5 text-xs text-muted">
               <span className="tnum">{row.sets}</span> x{" "}
               <span className="tnum">
@@ -146,12 +146,12 @@ export function PlanExerciseRow({
           />
 
           <label className="flex flex-col gap-2">
-            <span className="text-label font-medium uppercase tracking-wide text-muted">Note</span>
+            <span className="font-mono text-label font-light uppercase text-muted">Note</span>
             <input
               value={row.notes ?? ""}
               onChange={(e) => patch({ notes: e.target.value || null })}
               placeholder="Pain-free depth only"
-              className="w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text placeholder:text-faint focus:border-volt-dim focus:outline-none"
+              className="w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text placeholder:text-faint focus:border-accent-dim focus:outline-none"
             />
           </label>
 
@@ -236,7 +236,7 @@ function OptionalNumber({
 
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-label font-medium uppercase tracking-wide text-muted">{label}</span>
+      <span className="font-mono text-label font-light uppercase text-muted">{label}</span>
       <input
         type="text"
         inputMode="decimal"
@@ -249,7 +249,7 @@ function OptionalNumber({
         onKeyDown={(e) => {
           if (e.key === "Enter") e.currentTarget.blur();
         }}
-        className="tnum w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text placeholder:text-faint focus:border-volt-dim focus:outline-none"
+        className="tnum w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text placeholder:text-faint focus:border-accent-dim focus:outline-none"
       />
       {helper && <span className="text-xs text-faint">{helper}</span>}
     </label>
@@ -287,7 +287,7 @@ function SmallNumber({
 
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-label font-medium uppercase tracking-wide text-muted">{label}</span>
+      <span className="font-mono text-label font-light uppercase text-muted">{label}</span>
       <input
         type="text"
         inputMode="decimal"
@@ -299,7 +299,7 @@ function SmallNumber({
         onKeyDown={(e) => {
           if (e.key === "Enter") e.currentTarget.blur();
         }}
-        className="tnum w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text focus:border-volt-dim focus:outline-none"
+        className="tnum w-full rounded-ctl border border-line bg-surface-2 px-3.5 py-3 text-text focus:border-accent-dim focus:outline-none"
       />
       {helper && <span className="text-xs text-faint">{helper}</span>}
     </label>

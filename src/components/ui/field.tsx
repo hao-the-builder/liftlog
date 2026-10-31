@@ -27,7 +27,7 @@ export function Field({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-label font-medium uppercase tracking-wide text-muted">
+      <label htmlFor={id} className="font-mono text-label font-light uppercase text-muted">
         {label}
       </label>
 
@@ -38,10 +38,10 @@ export function Field({
           aria-invalid={error ? true : undefined}
           aria-describedby={clsx(helper && helperId, error && errorId) || undefined}
           className={clsx(
-            "w-full rounded-ctl bg-surface-2 px-3.5 py-3 text-text",
+            "w-full rounded-ctl bg-black/20 px-3.5 py-3 text-text shadow-[inset_0_1px_2px_rgb(0_0_0/0.5)]",
             "border transition-colors duration-150 ease-out",
             "placeholder:text-faint",
-            error ? "border-danger" : "border-line focus:border-volt-dim",
+            error ? "border-danger" : "border-line focus:border-accent-dim",
             suffix && "pr-12",
             className,
           )}

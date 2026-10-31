@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
   if (ready === false) {
     return (
       <div className="flex flex-col gap-5">
-        <h1 className="text-2xl font-bold tracking-tight">This link has expired</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">This link has expired</h1>
         <p className="text-sm text-muted">
           Reset links work once and last an hour. Request a new one and open it on this phone.
         </p>
@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Set a new password</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Set a new password</h1>
         <p className="mt-1.5 text-sm text-muted">You stay signed in on this device afterwards.</p>
       </div>
 

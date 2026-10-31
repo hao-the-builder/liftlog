@@ -29,9 +29,9 @@ export function StartCard({ next, hasTemplates, onStart, onRestDone }: Props) {
 
   if (!hasTemplates) {
     return (
-      <section className="rounded-surface bg-surface px-5 py-8 text-center">
-        <CalendarBlank size={28} weight="duotone" className="mx-auto text-volt" />
-        <h2 className="mt-3 text-lg font-semibold">Nothing planned yet</h2>
+      <section className="pane rounded-surface px-5 py-8 text-center">
+        <CalendarBlank size={28} weight="duotone" className="mx-auto text-accent" />
+        <h2 className="mt-3 text-lg font-medium">Nothing planned yet</h2>
         <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted">
           Build your split first. Any number of days, any order, rest days wherever you want
           them.
@@ -56,12 +56,12 @@ export function StartCard({ next, hasTemplates, onStart, onRestDone }: Props) {
 
   return (
     <>
-      <section className="rounded-surface bg-surface p-5">
-        <p className="text-label font-medium uppercase tracking-wide text-faint">Next up</p>
+      <section className="pane rounded-surface p-5">
+        <p className="font-mono text-label font-light uppercase text-faint">Next up</p>
 
         {next?.is_rest_day ? (
           <>
-            <h2 className="mt-1.5 text-2xl font-bold tracking-tight">{next.name}</h2>
+            <h2 className="mt-1.5 text-[1.75rem] font-light leading-none tracking-tight">{next.name}</h2>
             <p className="mt-1.5 text-sm text-muted">
               Nothing scheduled. Mark it done to move the rotation on, or train anyway.
             </p>
@@ -76,7 +76,7 @@ export function StartCard({ next, hasTemplates, onStart, onRestDone }: Props) {
           </>
         ) : (
           <>
-            <h2 className="mt-1.5 text-2xl font-bold tracking-tight">
+            <h2 className="mt-1.5 text-[1.75rem] font-light leading-none tracking-tight">
               {next?.name ?? "Empty workout"}
             </h2>
             <TemplateSummary templateId={next?.id} />

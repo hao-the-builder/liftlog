@@ -69,7 +69,7 @@ export function InstallHint() {
       role="note"
       className="flex items-start gap-3 border-b border-line bg-surface-2 px-4 py-3"
     >
-      <Export size={18} weight="bold" className="mt-0.5 shrink-0 text-volt" />
+      <Export size={18} weight="bold" className="mt-0.5 shrink-0 text-accent" />
       <p className="flex-1 text-xs leading-relaxed text-muted">
         <span className="font-medium text-text">Put Liftlog on your home screen.</span> Tap
         Share, then Add to Home Screen. It opens full screen and works without signal.

@@ -68,7 +68,8 @@ npx supabase db push
 | `0004_last_write_wins.sql` | Makes a later edit win over an earlier one that synced after it |
 | `0005_deletions.sql` | Tombstones, so a delete on one device reaches the others |
 | `0006_deletions_write_grant.sql` | Lets `delete_row()` write the tombstone it records. Required: without it every delete fails |
-| `0007_start_weight.sql` | A starting weight per exercise per day, used to seed the first session |
+| `0007_start_weight.sql` | A starting weight per exercise per day, used to seed the first session. Required: the app sends this column |
+| `0008_workout_day_name.sql` | Stamps the workout day's name onto the workout, so the per-day volume trend survives a template being renamed or deleted. Required: the app sends this column |
 
 They are idempotent: running them twice is safe.
 
@@ -144,7 +145,7 @@ npm test     # 108 unit tests
 npm run e2e  # one end-to-end journey
 ```
 
-The unit tests cover the logic worth being sure about: the progression hint, Epley e1RM, PR detection (including replaying a session so a record set early in it raises the bar for the rest), fractional sets per muscle, the moving average and weekly rate of change, the CSV escaping, and the zip writer. One test parses the library migration to catch the muscle vocabulary drifting away from the one the volume chart groups on.
+The unit tests cover the logic worth being sure about: the progression hint, Epley e1RM, PR detection (including replaying a session so a record set early in it raises the bar for the rest), fractional sets per muscle, the moving average and weekly rate of change, per-day tonnage and its comparison against the previous occurrence of that same day, the CSV escaping, and the zip writer. One test parses the library migration to catch the muscle vocabulary drifting away from the one the volume chart groups on.
 
 The end-to-end test runs the whole journey, sign in through to a finished workout, against a stubbed Supabase, so it needs no project, no secrets and no network.
 

@@ -32,16 +32,16 @@ function Confirmation() {
 function Shell({ children }: { children?: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-6">
-      <EnvelopeSimple size={32} weight="duotone" className="text-volt" />
+      <EnvelopeSimple size={32} weight="duotone" className="text-accent" />
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Confirm your email</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Confirm your email</h1>
         <p className="mt-1.5 text-sm text-muted">
           {children ?? "Open the link we just sent you, on this phone, to finish setting up."}
         </p>
       </div>
       <p className="text-sm text-muted">
         Nothing arrived? Check spam, then{" "}
-        <Link href="/signup" className="font-medium text-volt underline-offset-4 hover:underline">
+        <Link href="/signup" className="font-medium text-accent underline-offset-4 hover:underline">
           try again
         </Link>
         .

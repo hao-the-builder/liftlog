@@ -126,11 +126,26 @@ export async function activeWorkout() {
   return db().workouts.filter((w) => w.finished_at === null).first();
 }
 
+/**
+ * Reads the workout day's name as it is right now.
+ *
+ * The name is snapshotted onto the workout rather than joined on read, so that
+ * renaming or deleting a template later cannot rewrite or orphan the history
+ * the per-day volume trend is built from. Resolving it here rather than at the
+ * call site means no caller can forget to stamp it or pass a stale one.
+ */
+async function dayNameFor(templateId: string | null): Promise<string | null> {
+  if (!templateId) return null;
+  const template = await db().templates.get(templateId);
+  return template?.name ?? null;
+}
+
 export async function startWorkout(userId: string, templateId: string | null) {
   const row = {
     id: newId(),
     user_id: userId,
     template_id: templateId,
+    day_name: await dayNameFor(templateId),
     started_at: nowIso(),
     finished_at: null,
     notes: null,
@@ -159,6 +174,7 @@ export async function completeRestDay(userId: string, templateId: string) {
     id: newId(),
     user_id: userId,
     template_id: templateId,
+    day_name: await dayNameFor(templateId),
     started_at: at,
     finished_at: at,
     notes: null,

@@ -40,12 +40,12 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Check your email</h1>
         <p className="text-sm text-muted">
           If an account exists for <span className="text-text">{email}</span>, a reset link is
           on its way. The link works once and expires in an hour.
         </p>
-        <Link href="/login" className="text-sm font-medium text-volt underline-offset-4 hover:underline">
+        <Link href="/login" className="text-sm font-medium text-accent underline-offset-4 hover:underline">
           Back to sign in
         </Link>
       </div>
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Reset your password</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Reset your password</h1>
         <p className="mt-1.5 text-sm text-muted">We will send you a link to set a new one.</p>
       </div>
 

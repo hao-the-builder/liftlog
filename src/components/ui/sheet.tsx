@@ -52,9 +52,9 @@ export function Sheet({ open, title, onClose, children, footer }: SheetProps) {
         "open:animate-[sheet-up_280ms_var(--ease-drawer)]",
       )}
     >
-      <div className="flex max-h-[85dvh] flex-col rounded-t-[18px] border-t border-line bg-surface">
+      <div className="pane-blur-deep flex max-h-[85dvh] flex-col rounded-t-[18px] border-t border-line-strong">
         <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
-          <h2 className="text-base font-semibold">{title}</h2>
+          <h2 className="text-base font-medium tracking-tight">{title}</h2>
           <button
             type="button"
             onClick={onClose}

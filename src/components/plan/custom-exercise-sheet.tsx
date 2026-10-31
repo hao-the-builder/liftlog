@@ -141,7 +141,7 @@ function ChipGroup({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-label font-medium uppercase tracking-wide text-muted">{label}</span>
+      <span className="font-mono text-label font-light uppercase text-muted">{label}</span>
       {helper && <span className="-mt-1 text-xs text-faint">{helper}</span>}
       <div className="flex flex-wrap gap-1.5">
         {options.map((option) => {
@@ -156,7 +156,7 @@ function ChipGroup({
                 "min-h-9 rounded-ctl border px-3 text-xs font-medium",
                 "transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.96]",
                 active
-                  ? "border-volt bg-volt-deep text-volt"
+                  ? "border-accent bg-accent-deep text-accent"
                   : "border-line bg-surface-2 text-muted hover:border-line-strong hover:text-text",
               )}
             >

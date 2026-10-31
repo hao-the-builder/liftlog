@@ -78,7 +78,7 @@ export default function OnboardingPage() {
 
       <main className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Set up</h1>
+          <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Set up</h1>
           <p className="mt-1.5 text-sm text-muted">
             Five answers. You can change any of them later in Settings.
           </p>

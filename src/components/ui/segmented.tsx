@@ -27,7 +27,7 @@ export function Segmented<T extends string>({
   return (
     <div className={clsx("flex flex-col gap-2", className)}>
       {label && (
-        <span className="text-label font-medium uppercase tracking-wide text-muted">{label}</span>
+        <span className="font-mono text-label font-light uppercase text-muted">{label}</span>
       )}
       <div
         role="radiogroup"
@@ -46,7 +46,7 @@ export function Segmented<T extends string>({
               className={clsx(
                 "min-h-9 rounded-[4px] px-3 text-sm font-medium",
                 "transition-[background-color,color,transform] duration-150 ease-out active:scale-[0.97]",
-                selected ? "bg-volt text-bg" : "text-muted hover:text-text",
+                selected ? "bg-accent text-bg" : "text-muted hover:text-text",
               )}
             >
               {option.label}

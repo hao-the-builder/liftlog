@@ -53,7 +53,7 @@ export default function BodyPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-8">
       <header className="py-5">
-        <h1 className="text-2xl font-bold tracking-tight">Body</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Body</h1>
         <p className="mt-0.5 text-sm text-muted">Weight and protein, the two that move slowly.</p>
       </header>
 
@@ -100,13 +100,13 @@ function Headline({
   label: string;
 }) {
   return (
-    <div className="rounded-surface bg-surface px-5 py-4">
-      <p className="text-label font-medium uppercase tracking-wide text-faint">{label}</p>
+    <div className="pane rounded-surface px-5 py-4">
+      <p className="font-mono text-label font-light uppercase text-faint">{label}</p>
       <p className="mt-1 flex items-baseline gap-1.5">
         {/* Proportional figures on the hero number: tabular digits make a
             large standalone value read loose. The live-updating readouts in
             a workout are the opposite case and stay tabular. */}
-        <span className="text-4xl font-bold tracking-tight text-text">{value}</span>
+        <span className="text-4xl font-medium tracking-tight text-text">{value}</span>
         <span className="text-base text-muted">{unit}</span>
       </p>
       <p className="mt-1 text-xs text-muted">{caption}</p>
@@ -133,7 +133,7 @@ function WeighInCard({
   };
 
   return (
-    <div className="rounded-surface bg-surface px-4 py-4">
+    <div className="pane rounded-surface px-4 py-4">
       <div className="flex items-end gap-2">
         <Field
           label={existing === null ? "Weigh in today" : "Correct today's weigh-in"}
@@ -182,11 +182,11 @@ function ProteinCard({
   const remaining = target ? Math.max(0, target - grams) : null;
 
   return (
-    <section className="rounded-surface bg-surface">
+    <section className="pane rounded-surface">
       <div className="px-5 pt-4">
-        <p className="text-label font-medium uppercase tracking-wide text-faint">Protein today</p>
+        <p className="font-mono text-label font-light uppercase text-faint">Protein today</p>
         <p className="mt-1 flex items-baseline gap-1.5">
-          <span className="text-4xl font-bold tracking-tight text-text">{Math.round(grams)}</span>
+          <span className="text-4xl font-medium tracking-tight text-text">{Math.round(grams)}</span>
           <span className="text-base text-muted">
             {target ? `/ ${target} g` : "g"}
           </span>
@@ -208,7 +208,7 @@ function ProteinCard({
           className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-3"
         >
           <div
-            className="h-full rounded-full bg-volt transition-[width] duration-300 ease-out"
+            className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
             style={{ width: `${percent}%` }}
           />
         </div>

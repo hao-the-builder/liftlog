@@ -62,7 +62,7 @@ function LoginForm() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Sign in</h1>
         <p className="mt-1.5 text-sm text-muted">Your plan and your history, on any device.</p>
       </div>
 
@@ -111,7 +111,7 @@ function LoginForm() {
         </Link>
         <p className="text-muted">
           No account yet?{" "}
-          <Link href="/signup" className="font-medium text-volt underline-offset-4 hover:underline">
+          <Link href="/signup" className="font-medium text-accent underline-offset-4 hover:underline">
             Create one
           </Link>
         </p>

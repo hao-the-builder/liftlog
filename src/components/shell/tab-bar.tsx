@@ -25,7 +25,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Main"
-      className="border-t border-line bg-surface/95 backdrop-blur-sm pb-safe"
+      className="pane-blur border-t border-line pb-safe"
     >
       <ul className="grid grid-cols-4">
         {TABS.map(({ href, label, Icon }) => {
@@ -38,7 +38,7 @@ export function TabBar() {
                 className={clsx(
                   "flex min-h-14 flex-col items-center justify-center gap-1",
                   "transition-colors duration-150 ease-out active:scale-[0.97]",
-                  active ? "text-volt" : "text-faint hover:text-muted",
+                  active ? "text-accent" : "text-faint hover:text-muted",
                 )}
               >
                 <Icon size={22} weight={active ? "fill" : "regular"} />

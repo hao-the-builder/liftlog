@@ -7,12 +7,14 @@ import { Segmented } from "@/components/ui/segmented";
 import { ExercisePicker } from "@/components/today/exercise-picker";
 import { ExerciseCharts } from "@/components/progress/exercise-chart";
 import { VolumeChart, VolumeTable } from "@/components/progress/volume-chart";
+import { DayTonnageGrid } from "@/components/progress/day-tonnage";
 import { ExerciseHistory } from "@/components/progress/exercise-history";
 import { ChartCard } from "@/components/charts/chart-chrome";
 import { useSession } from "@/components/providers/session-provider";
 import { useNow } from "@/lib/hooks/use-now";
 import { db } from "@/lib/db/schema";
 import { compareWeeks, type MuscleMap } from "@/lib/logic/volume";
+import { dayTrackers } from "@/lib/logic/tonnage";
 import { RANGES, sessionSeries, withinRange, type RangeKey } from "@/lib/logic/series";
 import type { ExerciseRow } from "@/lib/types/database";
 
@@ -30,6 +32,7 @@ export default function ProgressPage() {
 
   const exercises = useLiveQuery(() => db().exercises.toArray(), []);
   const allSets = useLiveQuery(() => db().setLogs.toArray(), []);
+  const allWorkouts = useLiveQuery(() => db().workouts.toArray(), []);
 
   // The exercise shown by default is the one most recently trained, which is
   // almost always the one being looked up.
@@ -67,6 +70,32 @@ export default function ProgressPage() {
     [allSets, muscles, now],
   );
 
+  // One tracker per workout day. Unlike the weekly volume chart this has no
+  // range filter: the comparison is "against the last time", which a date
+  // window would break by hiding the session being compared against.
+  const trackers = useMemo(
+    () =>
+      dayTrackers(
+        (allWorkouts ?? []).map((w) => ({
+          id: w.id,
+          // Collapsed to null on purpose. A workout written locally before
+          // day_name existed has the field absent rather than null, and
+          // undefined would group into a second bucket that renders with the
+          // same "Unplanned" label as the null one.
+          dayName: w.day_name ?? null,
+          startedAt: w.started_at,
+          finishedAt: w.finished_at,
+        })),
+        (allSets ?? []).map((s) => ({
+          workoutId: s.workout_id,
+          weight: s.weight,
+          reps: s.reps,
+          isWarmup: s.is_warmup,
+        })),
+      ),
+    [allWorkouts, allSets],
+  );
+
   const points = useMemo(() => {
     if (!selected || !allSets) return [];
     const forExercise = allSets
@@ -84,9 +113,16 @@ export default function ProgressPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-8">
       <header className="py-5">
-        <h1 className="text-2xl font-bold tracking-tight">Progress</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Progress</h1>
         <p className="mt-0.5 text-sm text-muted">What moved, and what has not.</p>
       </header>
+
+      {/* Total weight moved, per workout day. First on the page because it is
+          the "am I progressing" question, and it is the one chart that answers
+          it for every day of the split at once. */}
+      <div className="mb-6">
+        <DayTonnageGrid trackers={trackers} unit={unit} />
+      </div>
 
       {/* Volume. Its own scope: always this week against last week, so it
           carries its own view toggle rather than sharing the range filter. */}
@@ -134,7 +170,7 @@ export default function ProgressPage() {
             <ExerciseHistory exerciseId={selected.id} unit={unit} range={range} />
           </>
         ) : (
-          <p className="rounded-surface bg-surface px-5 py-8 text-center text-sm text-muted">
+          <p className="pane rounded-surface px-5 py-8 text-center text-sm text-muted">
             Log a workout and your lifts show up here.
           </p>
         )}

@@ -29,11 +29,12 @@ import { MUSCLE_ORDER } from "@/lib/muscles";
 /**
  * Weekly sets per muscle, this week against last.
  *
- * Two series of the same measure at two times, so they are an ordinal pair of
- * one hue rather than two identities: the current week is the brighter step
- * and last week recedes behind it. The 10 to 20 band sits behind the bars as
- * a surface tint, not as a third series, because it is context rather than
- * data.
+ * Two series of the same measure at two times, so they are an ordinal pair
+ * rather than two identities: this week is the solid fill and last week is an
+ * outline behind it. In a black, silver and white palette the recession has to
+ * come from mark form, because a grey dark enough to read as "behind" is also
+ * dark enough to vanish into the pane. The 10 to 20 band sits behind both as a
+ * surface tint, not as a third series, because it is context rather than data.
  */
 export function VolumeChart({
   rows,
@@ -61,7 +62,7 @@ export function VolumeChart({
           <ChartLegend
             items={[
               { label: "This week", color: CHART.series },
-              { label: "Last week", color: CHART.seriesDim },
+              { label: "Last week", color: CHART.seriesDim, outline: true },
             ]}
           />
           <div className="pr-4 pb-2">
@@ -113,10 +114,16 @@ export function VolumeChart({
                     );
                   }}
                 />
+                {/* Last week is an outline, not a fill. A monochrome fill dark
+                    enough to recede behind this week lands at 1.66:1 against
+                    the pane and disappears, so the recession is carried by
+                    mark form instead of by lightness. */}
                 <Bar
                   dataKey="lastWeek"
                   name="Last week"
-                  fill={CHART.seriesDim}
+                  fill="none"
+                  stroke={CHART.seriesDim}
+                  strokeWidth={1.5}
                   radius={[0, 4, 4, 0]}
                   isAnimationActive={false}
                 />
@@ -172,7 +179,7 @@ export function VolumeTable({ rows }: { rows: MuscleComparison[] }) {
             <th scope="row" className="px-4 py-2.5 text-left font-normal text-muted">
               {row.muscle}
             </th>
-            <td className="tnum px-2 py-2.5 text-right font-semibold text-text">
+            <td className="tnum px-2 py-2.5 text-right font-medium text-text">
               {row.thisWeek}
             </td>
             <td className="tnum px-4 py-2.5 text-right text-muted">{row.lastWeek}</td>

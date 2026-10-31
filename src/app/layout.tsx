@@ -1,25 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { ServiceWorkerRegistration } from "@/components/pwa/service-worker";
 import "./globals.css";
 
-// Archivo carries every label, heading and button. An industrial grotesque with
-// signage lineage that holds its shape at 11px and at 48px. Deliberately not Inter.
-const archivo = Archivo({
-  variable: "--font-archivo",
+// Space Grotesk carries every label, heading and button. Its light weight is
+// the voice of the design: geometric, slightly technical, and drawn with
+// enough character in the letterforms to survive at 300 without going limp.
+// 300 is the body weight, 400 for headings that need a touch more presence,
+// and 500 is the ceiling: names, values and buttons. Nothing in this design is
+// bold, so no heavier weight is downloaded.
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
-// Geist Mono carries every numeral the user reads or edits. Monospaced by
-// construction, so a counting-down timer or an edited rep count physically
-// cannot shift width. Mono here is measurement, not decoration.
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// IBM Plex Mono carries every numeral the user reads or edits, and the wide
+// uppercase micro labels. Monospaced by construction, so a counting-down timer
+// or an edited rep count physically cannot shift width. Mono here is
+// measurement, not decoration.
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
@@ -58,12 +63,12 @@ export const viewport: Viewport = {
   // and the bottom tab bar react the way they already do on iOS.
   interactiveWidget: "resizes-content",
   // Never user-scalable: false. Inputs are 16px so iOS has no reason to zoom.
-  themeColor: "#0b0d0c",
+  themeColor: "#060708",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${archivo.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${plexMono.variable} h-full antialiased`}>
       <body className="min-h-full bg-bg text-text">
         <SessionProvider>{children}</SessionProvider>
         <ServiceWorkerRegistration />

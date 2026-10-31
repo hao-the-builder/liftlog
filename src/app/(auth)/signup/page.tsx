@@ -61,7 +61,7 @@ export default function SignupPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
+        <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Create your account</h1>
         <p className="mt-1.5 text-sm text-muted">
           Takes a minute. You build your own split next.
         </p>
@@ -106,7 +106,7 @@ export default function SignupPage() {
 
       <p className="text-sm text-muted">
         Already have one?{" "}
-        <Link href="/login" className="font-medium text-volt underline-offset-4 hover:underline">
+        <Link href="/login" className="font-medium text-accent underline-offset-4 hover:underline">
           Sign in
         </Link>
       </p>

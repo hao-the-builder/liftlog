@@ -47,7 +47,7 @@ export function ExercisePicker({ open, title, onClose, onPick }: Props) {
             aria-label="Search exercises"
             autoCapitalize="none"
             autoCorrect="off"
-            className="w-full rounded-ctl border border-line bg-surface-2 py-3 pl-9 pr-3 text-text placeholder:text-faint focus:border-volt-dim focus:outline-none"
+            className="w-full rounded-ctl border border-line bg-surface-2 py-3 pl-9 pr-3 text-text placeholder:text-faint focus:border-accent-dim focus:outline-none"
           />
         </div>
       </div>

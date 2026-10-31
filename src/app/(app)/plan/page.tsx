@@ -71,7 +71,7 @@ export default function PlanPage() {
     <div className="mx-auto w-full max-w-2xl px-4 pb-8">
       <header className="flex items-end justify-between gap-3 py-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Plan</h1>
+          <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Plan</h1>
           <p className="mt-0.5 text-sm text-muted">
             {empty ? "Build your split." : "Today walks these in order."}
           </p>
@@ -86,8 +86,8 @@ export default function PlanPage() {
       </header>
 
       {empty ? (
-        <section className="rounded-surface bg-surface px-5 py-8 text-center">
-          <h2 className="text-lg font-semibold">No plan yet</h2>
+        <section className="pane rounded-surface px-5 py-8 text-center">
+          <h2 className="text-lg font-medium">No plan yet</h2>
           <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted">
             Add a day, fill it with exercises, repeat. Three days or six, rest days wherever
             you want them. Nothing here is fixed.
@@ -103,7 +103,7 @@ export default function PlanPage() {
           {(templates ?? []).map((template, index) => (
             <li
               key={template.id}
-              className="flex items-center gap-1 rounded-surface bg-surface pl-1 pr-2"
+              className="flex items-center gap-1 pane rounded-surface pl-1 pr-2"
             >
               <ReorderButtons
                 index={index}
@@ -116,7 +116,7 @@ export default function PlanPage() {
                 className="flex min-h-16 flex-1 items-center justify-between gap-3 py-3 pr-1"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-text">{template.name}</p>
+                  <p className="truncate text-sm font-medium text-text">{template.name}</p>
                   <p className="mt-0.5 text-xs text-muted">
                     {template.is_rest_day ? (
                       "Rest day"

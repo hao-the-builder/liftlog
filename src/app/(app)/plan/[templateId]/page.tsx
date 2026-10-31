@@ -41,7 +41,7 @@ export default function TemplateEditorPage() {
     return (
       <div className="px-4 py-6">
         <p className="text-sm text-muted">That day is gone.</p>
-        <Link href="/plan" className="mt-3 inline-block text-sm text-volt hover:underline">
+        <Link href="/plan" className="mt-3 inline-block text-sm text-accent hover:underline">
           Back to plan
         </Link>
       </div>
@@ -103,7 +103,7 @@ export default function TemplateEditorPage() {
           value={template.name}
           onChange={(e) => void rename(e.target.value)}
           aria-label="Day name"
-          className="min-w-0 flex-1 rounded-ctl border border-transparent bg-transparent px-2 py-1.5 text-xl font-bold tracking-tight text-text transition-colors duration-150 ease-out focus:border-line-strong focus:bg-surface-2 focus:outline-none"
+          className="min-w-0 flex-1 rounded-ctl border border-transparent bg-transparent px-2 py-1.5 text-xl font-light tracking-tight text-text transition-colors duration-150 ease-out focus:border-line-strong focus:bg-surface-2 focus:outline-none"
         />
         <button
           type="button"
@@ -115,7 +115,7 @@ export default function TemplateEditorPage() {
         </button>
       </header>
 
-      <label className="flex items-center justify-between gap-3 rounded-surface bg-surface px-4 py-3.5">
+      <label className="flex items-center justify-between gap-3 pane rounded-surface px-4 py-3.5">
         <span className="min-w-0">
           <span className="block text-sm font-medium text-text">Rest day</span>
           <span className="mt-0.5 block text-xs text-muted">
@@ -126,7 +126,7 @@ export default function TemplateEditorPage() {
           type="checkbox"
           checked={template.is_rest_day}
           onChange={() => void toggleRestDay()}
-          className="h-6 w-6 shrink-0 accent-[var(--color-volt)]"
+          className="h-6 w-6 shrink-0 accent-[var(--color-accent)]"
         />
       </label>
 
@@ -149,7 +149,7 @@ export default function TemplateEditorPage() {
           </div>
 
           {(rows?.length ?? 0) === 0 && (
-            <p className="mt-4 rounded-surface bg-surface px-5 py-8 text-center text-sm text-muted">
+            <p className="mt-4 pane rounded-surface px-5 py-8 text-center text-sm text-muted">
               Nothing in this day yet. Add the first exercise.
             </p>
           )}

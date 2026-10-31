@@ -50,16 +50,23 @@ export function SetRow({
     <div
       className={clsx(
         "relative flex items-center gap-1 py-3 pl-2 pr-1.5 transition-colors duration-200 ease-out",
-        logged && "bg-volt-deep/20",
+        logged && "bg-accent-deep/20",
+        // A record is bracketed by two bright hairlines, top and bottom. The
+        // row does not fill and does not invert — it becomes a light source,
+        // which is the only way a record can read in a palette with no second
+        // colour to switch to.
+        pr &&
+          logged &&
+          "bg-accent-deep/40 shadow-[inset_0_1px_0_var(--color-record-rim),inset_0_-1px_0_var(--color-record-rim)]",
       )}
     >
-      {/* A logged set is marked by a volt edge rather than a filled row, so a
+      {/* A logged set is marked by a light edge rather than a filled row, so a
           screen of completed work stays readable instead of glowing. */}
       <span
         aria-hidden="true"
         className={clsx(
           "absolute inset-y-0 left-0 w-0.5 transition-colors duration-200 ease-out",
-          logged ? (pr ? "bg-pr" : "bg-volt") : "bg-transparent",
+          logged ? (pr ? "bg-record emit-soft" : "bg-accent") : "bg-transparent",
         )}
       />
 
@@ -72,11 +79,11 @@ export function SetRow({
         aria-label={`Set ${index + 1}, ${type}. Change type.`}
         className="flex min-h-11 w-8 shrink-0 flex-col items-center justify-center rounded-ctl transition-colors duration-150 ease-out hover:bg-surface-2"
       >
-        <span className={clsx("tnum text-sm font-semibold", logged ? "text-text" : "text-faint")}>
+        <span className={clsx("tnum text-sm font-medium", logged ? "text-text" : "text-faint")}>
           {index + 1}
         </span>
         {(isWarmup || isDropSet) && (
-          <span className="text-[9px] font-semibold uppercase tracking-wide text-faint">
+          <span className="text-[9px] font-medium uppercase tracking-wide text-faint">
             {isWarmup ? "Warm" : "Drop"}
           </span>
         )}
@@ -88,6 +95,7 @@ export function SetRow({
           value={weight}
           step={increment}
           precision={2}
+          emphasis={Boolean(pr) && logged}
           onChange={onWeight}
         />
         <NumberStepper
@@ -96,6 +104,7 @@ export function SetRow({
           step={1}
           precision={0}
           width="narrow"
+          emphasis={Boolean(pr) && logged}
           onChange={onReps}
         />
       </div>
@@ -116,9 +125,15 @@ export function SetRow({
             "active:scale-[0.92]",
             logged
               ? pr
-                ? "border-pr bg-pr text-bg glow-pr"
-                : "border-volt bg-volt text-bg glow-volt"
-              : "border-line-strong bg-surface-2 text-faint hover:border-volt-dim hover:text-volt",
+                ? // A record emits. This is one of only three things in the app
+                  // that may.
+                  "border-record bg-record text-bg emit"
+                : // A plain logged set does NOT glow. It happens twenty-plus
+                  // times a session, and twenty glowing checks on one screen
+                  // spends the whole glow budget on the least remarkable thing
+                  // in the app.
+                  "border-accent bg-accent text-bg"
+              : "border-line-strong bg-surface-2 text-faint hover:border-accent-dim hover:text-accent",
           )}
         >
           <Check
@@ -133,19 +148,25 @@ export function SetRow({
 }
 
 /**
- * The one celebratory moment in the app. Magenta appears here and nowhere
- * else, which is what makes it mean something.
+ * The one celebratory moment in the app.
+ *
+ * There is no record colour in this palette, so the badge cannot be the thing
+ * that identifies a record — it would be white type on a white-ish wash like
+ * everything else. The badge is therefore a LABEL, carrying the word, while
+ * the brightness of the row carries the feeling. Identity by name, never by
+ * colour alone, which is also what makes it survive a colourblind reader and
+ * a greyscale screenshot.
  */
 function PrBadge({ kind }: { kind: PrKind }) {
   return (
     <span className="pointer-events-none absolute right-2 top-0 z-10 flex -translate-y-1/2 items-center">
       <span
         aria-hidden="true"
-        className="animate-pr-bloom absolute inset-0 rounded-full bg-pr"
+        className="animate-record-bloom absolute inset-0 rounded-full bg-record"
       />
-      <span className="animate-pr-pop relative flex items-center gap-1 rounded-ctl bg-pr-deep px-2 py-1">
-        <Trophy size={12} weight="fill" className="text-pr" />
-        <span className="text-[10px] font-bold uppercase tracking-wide text-pr">
+      <span className="animate-record-ignite emit relative flex items-center gap-1 rounded-full bg-record px-2 py-1">
+        <Trophy size={11} weight="fill" className="text-bg" />
+        <span className="font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-bg">
           {prLabel(kind)}
         </span>
       </span>

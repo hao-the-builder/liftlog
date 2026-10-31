@@ -8,13 +8,13 @@
 export function SupabaseNotConfigured() {
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-2xl font-bold tracking-tight">Not connected yet</h1>
+      <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Not connected yet</h1>
       <p className="text-sm text-muted">
         Liftlog needs a Supabase project before anyone can sign in. Create one, then add
         these to <code className="text-text">.env.local</code> and restart the dev server.
       </p>
 
-      <ul className="flex flex-col divide-y divide-line rounded-surface bg-surface">
+      <ul className="flex flex-col divide-y divide-line pane rounded-surface">
         {["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"].map((name) => (
           <li key={name} className="px-4 py-3 font-mono text-xs text-text">
             {name}

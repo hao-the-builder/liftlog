@@ -1,75 +1,116 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Liftlog design tokens.
-   Dark neon, read in a dim gym at arm's length. Near-black steel base, one
-   working accent (volt), one accent reserved entirely for records (pr).
-   See DESIGN.md for the reasoning behind every value here.
+   Liftlog design tokens — "Vector".
+
+   An instrument that draws with light on an empty field. The palette is black,
+   silver and white; there is no accent hue. Light itself is the accent, which
+   is why the primary action is a white pill and a personal record emits rather
+   than changing colour.
+
+   Three rules govern everything here:
+
+     1. Surfaces are white washes over the void, never opaque greys. A pane is
+        a plane catching a rim of light along its top edge, not a filled card.
+     2. Glow is rationed to exactly three things: the primary action, the
+        running rest timer, and a record. Nothing else may use it. The primary
+        action gets the softest of the three, because a white pill on the void
+        blooms a little just by being white.
+     3. Red exists only to mean "this destroys something". It is never a series
+        colour, never a state, never decoration.
+
+   Every ratio quoted below was computed against the surface it is actually
+   rendered on, not asserted. See DESIGN.md for the reasoning.
 --------------------------------------------------------------------------- */
 
 @theme {
-  /* Surfaces. Never pure #000: it crushes OLED detail and kills the glow. */
-  --color-bg: #0b0d0c;
-  --color-surface: #141715;
-  --color-surface-2: #1d211e;
-  --color-surface-3: #262b28;
+  /* The void. Deeper than the old near-black, because Vector needs an empty
+     field for the hairlines and the bloom to register against. */
+  --color-bg: #060708;
 
-  /* Hairlines are the only divider in the app. No card borders. */
-  --color-line: #2a2f2c;
-  --color-line-strong: #3a403c;
+  /* Surfaces are translucent white, so a pane always belongs to the plane
+     behind it. Resolved over the void these land on #0D0E0F, #141516, #1C1D1E.
+     Nesting them compounds, which is the intent: depth comes from stacking
+     light, not from picking a darker grey. */
+  --color-surface: rgb(255 255 255 / 0.028);
+  --color-surface-2: rgb(255 255 255 / 0.055);
+  --color-surface-3: rgb(255 255 255 / 0.09);
 
-  /* Text. All three pass 4.5:1 on --color-bg. */
-  --color-text: #f2f5f1;
-  --color-muted: #8a918c;
-  --color-faint: #767d78;
+  /* Hairlines are the only divider in the app. No card borders, ever. */
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.16);
 
-  /* The one working accent: logged set, running timer, progress. */
-  --color-volt: #d4ff3f;
-  --color-volt-dim: #9fc02e;
-  --color-volt-deep: #3f4d18;
+  /* Ink. Checked on all four surfaces, worst case first:
+       text 16.38:1 on surface-3    muted 7.51:1    faint 4.89:1
+     faint is the floor of the system and still clears 4.5:1 where the app
+     actually puts it, which is a disabled control label on surface-3. The
+     concept used #7A8086 and failed that case at 4.21:1, which is the reason
+     this value is a step lighter. */
+  --color-text: #fbfcfd;
+  --color-muted: #a8aeb4;
+  --color-faint: #858b91;
 
-  /* Records only. This colour appears nowhere else in the app. */
-  --color-pr: #ff2e88;
-  --color-pr-dim: #c01f66;
-  --color-pr-deep: #4d1030;
+  /* The accent is light, not a hue. A primary action is a white pill at
+     19.63:1, the dim step is the recessive half of a pair, and the deep step
+     is a pressed-state wash rather than a dark fill. */
+  --color-accent: #fbfcfd;
+  --color-accent-dim: #a8aeb4;
+  --color-accent-deep: rgb(255 255 255 / 0.12);
 
-  --color-danger: #ff5a4e;
-  --color-danger-dim: #e6483d;
-  --color-danger-deep: #4d1a16;
+  /* Records only. Pure white, one step above the text token, so a record is
+     brighter than everything near it even before the bloom lands. This pair
+     appears nowhere else in the app. */
+  --color-record: #ffffff;
+  --color-record-rim: rgb(255 255 255 / 0.3);
 
-  /* Chart marks are a stepped-down volt, not the UI accent.
-     The raw accent sits at OKLCH L 0.94, which blooms as a fill or a stroke
-     against this surface. These two steps were checked with the data-viz
-     validator against #141715: both inside the dark lightness band, above the
-     chroma floor, over 3:1 contrast, and a clean monotone ordinal pair for
-     this-week against last-week. Do not substitute --color-volt here.
-     The dim step was stepped down again after looking at the rendered
-     chart: the two were separable on paper and too close on a phone. */
-  --color-chart: #829f22;
-  --color-chart-dim: #4a5a18;
+  /* Destructive only. White label at 6.35:1, and the fill reads at 3.04:1 on
+     a pane so the button has an edge without needing a border. */
+  --color-danger: #b8241a;
+  --color-danger-dim: #a81f16;
+  --color-danger-deep: rgb(184 36 26 / 0.18);
 
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+  /* Chart marks.
+     The plot ramp is a monochrome ordinal scale, and the darkest useful fill
+     is the problem: a value dark enough to sit 3:1 below the mid step lands
+     at 1.66:1 against the pane, which is invisible. So the recessive series is
+     drawn as an OUTLINE, and chart-dim is its stroke, solved to 3.18:1 so a
+     1px line still reads at arm's length.
 
-  /* Two radii, one rule: controls 6, surfaces 14, circles full. */
-  --radius-ctl: 6px;
-  --radius-surface: 14px;
+     chart-dim against chart is only 1.83:1. That is deliberate, and below the
+     usual adjacent-step rule: the two series are told apart by MARK FORM,
+     stroke against fill, which is a categorical-strength secondary encoding
+     rather than lightness alone. Do not "fix" this by brightening the stroke,
+     because that removes the recession the chart depends on. */
+  --color-chart: #878e95;
+  --color-chart-dim: #5c636c;
+  --color-chart-emit: #fbfcfd;
+
+  --font-sans: var(--font-space-grotesk), "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* Controls are near-square and surfaces are generous: an instrument panel,
+     not a set of rounded cards. */
+  --radius-ctl: 4px;
+  --radius-surface: 16px;
 
   /* Built-in CSS easings are too weak. These are the only curves in the app. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
-  /* Readouts. Fixed rem scale, ratio ~1.2, no fluid clamp sizing. */
+  /* Readouts. Fixed rem scale, ratio ~1.2, no fluid clamp sizing.
+     Labels carry the wide mono tracking Vector uses for micro type. Display
+     figures stay in the sans at weight 300, because the mono at display size
+     splits a decimal into "57 . 5" with a visible gap around the point. */
   --text-label: 0.6875rem;
   --text-label--line-height: 1rem;
-  --text-label--letter-spacing: 0.08em;
+  --text-label--letter-spacing: 0.2em;
   --text-readout: 2rem;
   --text-readout--line-height: 1;
-  --text-readout--letter-spacing: -0.03em;
+  --text-readout--letter-spacing: -0.015em;
   --text-timer: 3.75rem;
   --text-timer--line-height: 1;
-  --text-timer--letter-spacing: -0.04em;
+  --text-timer--letter-spacing: -0.02em;
 }
 
 /* ---------------------------------------------------------------------------
@@ -93,8 +134,19 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
+    /* The light weight is the voice of this design, so it is set once here
+       rather than repeated on every component. */
+    font-weight: 300;
     /* No horizontal scroll, ever. */
     overflow-x: hidden;
+  }
+
+  /* Names and values step up a weight to hold their own against the void.
+     Light type is the default, not the only option. */
+  strong,
+  b,
+  th {
+    font-weight: 500;
   }
 
   /* Under 16px iOS zooms the page on focus and never zooms back out. */
@@ -123,12 +175,12 @@
 
   /* The browser surfaces we did not draw still belong to the design. */
   ::selection {
-    background-color: var(--color-volt-deep);
+    background-color: var(--color-accent-deep);
     color: var(--color-text);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-volt);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 
@@ -138,7 +190,7 @@
 
   input,
   textarea {
-    caret-color: var(--color-volt);
+    caret-color: var(--color-accent);
   }
 
   * {
@@ -165,31 +217,93 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* The glow budget. Four things in the whole app may use these, and nothing
-     else: a set at the instant it is logged, the running timer, progress, and
-     a personal record. Each is a real offset shadow plus a tight bloom, not a
-     zero-offset halo. */
-  .glow-volt {
+  /* -------------------------------------------------------------------------
+     The pane: the one container in this design.
+
+     A plane over the void, built from a white wash, a hairline edge, and a rim
+     of light along the top where the single light source catches it. There is
+     no filled card in Vector, so this is the only container treatment in the
+     whole app.
+  ------------------------------------------------------------------------- */
+  .pane {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-line);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+  }
+
+  /* The blurred variant, for the layers that genuinely have content moving
+     behind them: the tab bar, a sheet, the rest timer, a tooltip. Everything in
+     normal document flow uses .pane instead. A backdrop-filter on every pane is
+     the most expensive thing in this design and buys nothing where the backdrop
+     is flat void.
+
+     This is the void at 82%, not a white wash. Glass over moving content has to
+     obscure it or the type on top stops being readable, and a 5% white wash
+     obscures nothing — it just tints whatever is sliding underneath. The rim
+     light is kept so the layer still reads as a plane. */
+  .pane-blur {
+    background-color: rgb(6 7 8 / 0.82);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+  }
+
+  /* A modal sheet covers more and has to be read against whatever it covers,
+     so it goes further still. */
+  .pane-blur-deep {
+    background-color: rgb(6 7 8 / 0.93);
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  }
+
+  /* Where backdrop-filter is unsupported the layer must still be opaque
+     enough to read, so it falls back to a near-solid void. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .pane-blur {
+      background-color: rgb(6 7 8 / 0.97);
+    }
+    .pane-blur-deep {
+      background-color: rgb(6 7 8 / 0.99);
+    }
+  }
+
+  /* A hairline rule, for dividing without drawing a box. */
+  .rule-t {
+    box-shadow: inset 0 1px 0 var(--color-line);
+  }
+
+  /* -------------------------------------------------------------------------
+     The glow budget.
+
+     Three things in the app may emit, in ascending order of brightness: the
+     primary action, the running rest timer, and a record. Light is rationed so
+     that when something glows it means something. These are real blooms, not
+     zero-offset halos.
+  ------------------------------------------------------------------------- */
+  .emit {
     box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.4),
-      0 0 0 1px var(--color-volt-dim),
-      0 0 16px -4px var(--color-volt);
+      0 0 0 1px var(--color-record-rim),
+      0 0 28px -6px rgb(255 255 255 / 0.45);
   }
-  .glow-pr {
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.4),
-      0 0 0 1px var(--color-pr-dim),
-      0 0 22px -4px var(--color-pr);
+  .emit-soft {
+    box-shadow: 0 0 24px -8px rgb(255 255 255 / 0.3);
   }
-  .text-glow-volt {
-    text-shadow: 0 0 18px rgb(212 255 63 / 0.35);
+  .text-emit {
+    text-shadow: 0 0 18px rgb(255 255 255 / 0.75);
   }
-  .text-glow-pr {
-    text-shadow: 0 0 18px rgb(255 46 136 / 0.45);
+  .text-emit-soft {
+    text-shadow: 0 0 16px rgb(255 255 255 / 0.3);
+  }
+  /* The destructive button keeps a faint bloom of its own so that it belongs
+     to the same physics as everything else, instead of reading as a web
+     button dropped into the design. */
+  .emit-danger {
+    box-shadow: 0 0 30px -10px rgb(184 36 26 / 0.55);
   }
 }
 
-/* Reduced motion means gentler, not zero: colour and opacity still carry
+/* Reduced motion means gentler, not zero: light and opacity still carry
    meaning, movement does not. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -208,30 +322,34 @@
    Logging a set happens twenty-plus times a session, so it gets press
    feedback and a state change, nothing more. A personal record happens a
    handful of times a month, which is what earns it an animation.
+
+   In Vector a record does not pop and does not recolour. It ignites: the value
+   comes up in brightness, and a bloom spreads past the edge and fades.
 --------------------------------------------------------------------------- */
 
-@keyframes pr-pop {
+@keyframes record-ignite {
   0% {
-    transform: scale(0.92);
     opacity: 0;
+    filter: brightness(0.6);
   }
-  60% {
-    transform: scale(1.04);
+  45% {
+    opacity: 1;
+    filter: brightness(1.5);
   }
   100% {
-    transform: scale(1);
     opacity: 1;
+    filter: brightness(1);
   }
 }
 
-@keyframes pr-bloom {
+@keyframes record-bloom {
   0% {
-    opacity: 0.55;
-    transform: scale(0.8);
+    opacity: 0.7;
+    transform: scaleX(0.4);
   }
   100% {
     opacity: 0;
-    transform: scale(1.9);
+    transform: scaleX(1);
   }
 }
 
@@ -244,15 +362,30 @@
   }
 }
 
-@layer utilities {
-  .animate-pr-pop {
-    animation: pr-pop 320ms var(--ease-out) both;
+/* The rest timer breathes while it runs, so the countdown reads as something
+   live rather than a number changing. */
+@keyframes arc-pulse {
+  0%,
+  100% {
+    opacity: 1;
   }
-  .animate-pr-bloom {
-    animation: pr-bloom 620ms var(--ease-out) forwards;
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@layer utilities {
+  .animate-record-ignite {
+    animation: record-ignite 420ms var(--ease-out) both;
+  }
+  .animate-record-bloom {
+    animation: record-bloom 680ms var(--ease-out) forwards;
   }
   .animate-check-settle {
     animation: check-settle 160ms var(--ease-out) both;
+  }
+  .animate-arc-pulse {
+    animation: arc-pulse 2s var(--ease-in-out) infinite;
   }
 }
 

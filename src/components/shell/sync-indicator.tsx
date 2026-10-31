@@ -130,7 +130,7 @@ function SyncProblemSheet({ open, onClose }: { open: boolean; onClose: () => voi
     >
       <div className="space-y-4 px-4 py-5">
         <p className="text-sm text-muted">
-          <span className="font-semibold text-text">Nothing is lost.</span> Every change is on this
+          <span className="font-medium text-text">Nothing is lost.</span> Every change is on this
           phone and stays there until it goes up. The queue stops at the first failure instead of
           skipping past it, so your sets keep their order.
         </p>
@@ -143,7 +143,7 @@ function SyncProblemSheet({ open, onClose }: { open: boolean; onClose: () => voi
         </dl>
 
         <div>
-          <p className="text-label font-medium uppercase tracking-wide text-faint">
+          <p className="font-mono text-label font-light uppercase text-faint">
             What the server said
           </p>
           <p className="mt-1.5 rounded-ctl border border-danger/30 bg-danger-deep px-3 py-2 font-mono text-xs leading-relaxed text-text">

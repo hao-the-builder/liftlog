@@ -60,9 +60,9 @@ function ShellSkeleton() {
     <div className="flex h-dvh flex-col overflow-hidden" aria-busy="true">
       <div className="min-h-0 flex-1 space-y-3 p-5 pt-safe">
         <div className="h-5 w-24 rounded-ctl bg-surface" />
-        <div className="h-24 rounded-surface bg-surface" />
-        <div className="h-40 rounded-surface bg-surface" />
-        <div className="h-40 rounded-surface bg-surface" />
+        <div className="h-24 pane rounded-surface" />
+        <div className="h-40 pane rounded-surface" />
+        <div className="h-40 pane rounded-surface" />
       </div>
       <div className="h-[72px] border-t border-line bg-surface pb-safe" />
     </div>

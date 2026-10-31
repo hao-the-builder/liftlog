@@ -160,7 +160,7 @@ function SessionLine({
       {/* One direct label, on the value that matters: where you are now. */}
       {last && (
         <p className="px-4 pt-1 text-xs text-muted">
-          Latest <span className="tnum font-semibold text-text">{round(last.value)}</span> {unit}
+          Latest <span className="tnum font-medium text-text">{round(last.value)}</span> {unit}
         </p>
       )}
     </div>

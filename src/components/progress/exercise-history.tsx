@@ -53,9 +53,9 @@ export function ExerciseHistory({
   if (sessions.length === 0) return null;
 
   return (
-    <section className="rounded-surface bg-surface">
+    <section className="pane rounded-surface">
       <header className="px-4 pt-4 pb-2">
-        <h2 className="text-sm font-semibold text-text">History</h2>
+        <h2 className="text-sm font-medium text-text">History</h2>
         <p className="mt-0.5 text-xs text-muted">
           <span className="tnum">{sessions.length}</span>{" "}
           {sessions.length === 1 ? "session" : "sessions"} in this range.
@@ -95,9 +95,9 @@ export function ExerciseHistory({
                     key={row.id}
                     className={row.is_warmup ? "text-xs text-faint" : "text-xs text-text"}
                   >
-                    <span className="tnum font-semibold">{row.weight}</span>
+                    <span className="tnum font-medium">{row.weight}</span>
                     <span className="text-faint"> x </span>
-                    <span className="tnum font-semibold">{row.reps}</span>
+                    <span className="tnum font-medium">{row.reps}</span>
                     {row.is_warmup && <span className="text-faint"> warm</span>}
                     {row.is_drop_set && <span className="text-faint"> drop</span>}
                   </li>

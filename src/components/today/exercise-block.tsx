@@ -203,10 +203,10 @@ export function ExerciseBlock({ workoutId, userId, unit, plan, onLogged, onSwap,
   const doneCount = logged?.length ?? 0;
 
   return (
-    <section className="rounded-surface bg-surface">
+    <section className="pane rounded-surface">
       <header className="flex items-start gap-3 px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold leading-tight text-text">{plan.name}</h2>
+          <h2 className="text-base font-medium leading-tight text-text">{plan.name}</h2>
           <p className="mt-1 text-xs text-muted">
             <span className="tnum">{plan.targetSets}</span> x{" "}
             <span className="tnum">
@@ -235,7 +235,7 @@ export function ExerciseBlock({ workoutId, userId, unit, plan, onLogged, onSwap,
         {last && last.sets.length > 0 && (
           <p className="text-xs text-muted">{describeLastSession(last.sets, unit)}</p>
         )}
-        <p className="flex items-start gap-1.5 text-xs text-volt-dim">
+        <p className="flex items-start gap-1.5 text-xs text-accent-dim">
           <Lightning size={13} weight="fill" className="mt-0.5 shrink-0" />
           <span>{hint.text}</span>
         </p>

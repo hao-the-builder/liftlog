@@ -187,7 +187,7 @@ function ActiveSession({
       </div>
 
       {exercises.length === 0 && (
-        <p className="rounded-surface bg-surface px-5 py-8 text-center text-sm text-muted">
+        <p className="pane rounded-surface px-5 py-8 text-center text-sm text-muted">
           Empty session. Add the first exercise to start logging.
         </p>
       )}
@@ -259,7 +259,7 @@ function IdleHeader() {
 
   return (
     <header className="py-5">
-      <h1 className="text-2xl font-bold tracking-tight">Today</h1>
+      <h1 className="text-[1.75rem] font-light leading-none tracking-tight">Today</h1>
       <p className="mt-0.5 min-h-5 text-sm text-muted">{today}</p>
     </header>
   );
@@ -278,7 +278,7 @@ function WorkoutHeader({
 
   return (
     <header className="py-5">
-      <h1 className="truncate text-2xl font-bold tracking-tight">{templateName ?? "Workout"}</h1>
+      <h1 className="truncate text-[1.75rem] font-light leading-none tracking-tight">{templateName ?? "Workout"}</h1>
       <p className="mt-0.5 min-h-5 text-sm text-muted">
         {minutes === null ? null : (
           <>
@@ -299,10 +299,10 @@ function SessionProgress({ done, target }: { done: number; target: number }) {
   const percent = target > 0 ? Math.min(100, (done / target) * 100) : 0;
 
   return (
-    <div className="rounded-surface bg-surface px-4 py-3">
+    <div className="pane rounded-surface px-4 py-3">
       <div className="flex items-baseline justify-between">
         <p className="text-sm text-muted">
-          <span className="tnum font-semibold text-text">{done}</span> of{" "}
+          <span className="tnum font-medium text-text">{done}</span> of{" "}
           <span className="tnum">{target}</span> sets done
         </p>
         <p className="tnum text-xs text-faint">{Math.round(percent)}%</p>
@@ -316,7 +316,7 @@ function SessionProgress({ done, target }: { done: number; target: number }) {
         className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3"
       >
         <div
-          className="h-full rounded-full bg-volt transition-[width] duration-300 ease-out"
+          className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
           style={{ width: `${percent}%` }}
         />
       </div>

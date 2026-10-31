@@ -22,8 +22,8 @@ export function LogoMark({ className }: { className?: string }) {
 export function Wordmark({ className }: { className?: string }) {
   return (
     <div className={clsx("flex items-center gap-2.5", className)}>
-      <LogoMark className="h-7 w-7 text-volt" />
-      <span className="text-lg font-bold tracking-tight text-text">Liftlog</span>
+      <LogoMark className="h-7 w-7 text-accent" />
+      <span className="text-lg font-medium tracking-tight text-text">Liftlog</span>
     </div>
   );
 }

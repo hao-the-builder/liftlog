@@ -16,6 +16,12 @@ interface NumberStepperProps {
   disabled?: boolean;
   /** Weight needs room for "122.5"; reps never exceeds three digits. */
   width?: "wide" | "narrow";
+  /**
+   * Makes the value emit. Used only by a set that just set a record, where the
+   * brightness of the number is how the record reads — there is no accent hue
+   * in this design to recolour it with.
+   */
+  emphasis?: boolean;
   onChange: (value: number) => void;
 }
 
@@ -37,6 +43,7 @@ export function NumberStepper({
   suffix,
   disabled = false,
   width = "wide",
+  emphasis = false,
   onChange,
 }: NumberStepperProps) {
   // A local string so a half-typed "6." or "" is allowed while editing. It is
@@ -68,7 +75,9 @@ export function NumberStepper({
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <span className="text-label font-medium uppercase tracking-wide text-faint">{label}</span>
+      {/* Micro labels are mono and widely tracked: the text-label token already
+          carries the 0.2em, so no tracking utility here to override it. */}
+      <span className="font-mono text-label font-light uppercase text-faint">{label}</span>
       <div className="flex items-center gap-0.5">
         <StepButton label={`Decrease ${label}`} disabled={disabled || value <= min} onClick={() => bump(-1)}>
           <Minus size={15} weight="bold" />
@@ -97,11 +106,18 @@ export function NumberStepper({
               // shrink and the row runs off the side of a phone. The widths
               // below are measured to fit a 390px screen: index, two steppers
               // and a 48px check, with the weight sized for "122.5".
-              "tnum min-w-0 rounded-ctl bg-transparent px-0.5 py-0.5 text-center",
-              "text-[1.375rem] leading-none font-bold tracking-tight text-text",
+              "tnum min-w-0 rounded-ctl px-0.5 py-1 text-center",
+              // Weight 500, not bold. The light end of Space Grotesk is the
+              // voice of this design and a bold numeral shouts over it.
+              "text-[1.375rem] leading-none font-medium tracking-tight text-text",
               width === "wide" ? "w-[4.5rem]" : "w-[2.75rem]",
-              "border border-transparent transition-colors duration-150 ease-out",
-              "focus:border-line-strong focus:bg-surface-2 focus:outline-none",
+              // A channel cut into the pane rather than a box drawn on it: the
+              // wash is darker than its surroundings and the top edge carries
+              // the shadow, which is the inverse of how a raised pane is lit.
+              "border border-line bg-black/20 shadow-[inset_0_1px_2px_rgb(0_0_0/0.5)]",
+              "transition-[border-color,color,box-shadow] duration-150 ease-out",
+              "focus:border-line-strong focus:outline-none",
+              emphasis && "text-emit border-record-rim text-white",
               disabled && "text-faint",
             )}
           />
@@ -141,7 +157,8 @@ function StepButton({
         // 44px tall for the thumb, narrow so two steppers and a check fit
         // across a 390px phone without the row scrolling sideways.
         "flex h-11 w-7 shrink-0 items-center justify-center rounded-ctl",
-        "border border-line bg-surface-2 text-muted",
+        // A raised plane: wash, hairline, and a rim of light along the top.
+        "border border-line bg-surface-2 text-muted shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]",
         "transition-[transform,color,border-color] duration-150 ease-out",
         "active:scale-[0.94] hover:border-line-strong hover:text-text",
         "disabled:pointer-events-none disabled:opacity-40",

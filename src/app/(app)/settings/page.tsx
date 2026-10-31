@@ -69,7 +69,7 @@ export default function SettingsPage() {
         >
           <CaretLeft size={20} />
         </Link>
-        <h1 className="text-xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-xl font-light tracking-tight">Settings</h1>
       </header>
 
       <div className="space-y-6">
@@ -246,8 +246,8 @@ export default function SettingsPage() {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-2 text-label font-medium uppercase tracking-wide text-faint">{title}</h2>
-      <div className="overflow-hidden rounded-surface bg-surface">{children}</div>
+      <h2 className="mb-2 font-mono text-label font-light uppercase text-faint">{title}</h2>
+      <div className="overflow-hidden pane rounded-surface">{children}</div>
     </section>
   );
 }

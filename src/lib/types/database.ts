@@ -67,6 +67,15 @@ export interface WorkoutRow {
   id: string;
   user_id: string;
   template_id: string | null;
+  /**
+   * The workout day's name, snapshotted when the workout started.
+   *
+   * Not derived from template_id on read: template_id is ON DELETE SET NULL and
+   * a template can be renamed, either of which would orphan or silently rewrite
+   * a history that the per-day volume trend depends on. Null means an ad-hoc
+   * workout with no day.
+   */
+  day_name: string | null;
   started_at: string;
   finished_at: string | null;
   notes: string | null;
@@ -126,7 +135,7 @@ export type Database = {
       exercises: TableDef<ExerciseRow, "id" | "equipment" | "secondary_muscles">;
       templates: TableDef<TemplateRow, "id" | "day_order" | "is_rest_day">;
       template_exercises: TableDef<TemplateExerciseRow, "id" | "position" | "sets" | "rep_min" | "rep_max" | "rest_seconds" | "increment" | "notes">;
-      workouts: TableDef<WorkoutRow, "id" | "template_id" | "started_at" | "finished_at" | "notes">;
+      workouts: TableDef<WorkoutRow, "id" | "template_id" | "day_name" | "started_at" | "finished_at" | "notes">;
       set_logs: TableDef<SetLogRow, "id" | "rir" | "is_warmup" | "is_drop_set" | "completed_at">;
       bodyweight_logs: TableDef<BodyweightLogRow, "id">;
       protein_logs: TableDef<ProteinLogRow, "id">;
