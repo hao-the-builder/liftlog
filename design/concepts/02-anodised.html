@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anodised — Liftlog concept 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --base:    #0C0D0E;
+    --panel:   #16181A;
+    --panel-2: #1F2225;
+    --line:    #2B2F33;
+    --line-up: #3A4046;
+
+    --text:    #F5F7F8;
+    --chrome:  #E8ECEF;
+    --silver:  #AEB4B9;
+    --dim:     #828A90;
+
+    --plot-lo:  #292F34;
+    --plot-mid: #7A8085;
+
+    /* One light source, from above. Every bevel in the file obeys it. */
+    --edge-top: rgba(255,255,255,0.085);
+    --edge-bot: rgba(0,0,0,0.55);
+
+    --sans: 'Barlow', 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--base);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Brushed grain. Horizontal, because that is the direction aluminium is
+     actually drawn, and it is the thing that stops a flat fill reading as a
+     flat fill. Kept under 2% so it is felt and never seen. */
+  .brushed {
+    position: relative;
+    isolation: isolate;
+  }
+  .brushed::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.016) 0px,
+      rgba(255,255,255,0.016) 1px,
+      rgba(0,0,0,0.014) 1px,
+      rgba(0,0,0,0.014) 3px
+    );
+  }
+  .brushed > * { position: relative; z-index: 1; }
+
+  /* The satin face: a shallow top-lit sheen, not a decorative gradient. */
+  .satin {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0) 42%),
+      var(--panel);
+    box-shadow:
+      inset 0 1px 0 var(--edge-top),
+      inset 0 -1px 0 var(--edge-bot);
+  }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px 120px; }
+
+  /* ---------- masthead ---------- */
+
+  .mast { padding: 68px 0 46px; border-bottom: 1px solid var(--line); }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  h1 {
+    margin: 20px 0 0;
+    font-size: clamp(3.25rem, 12vw, 8.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.88;
+    text-transform: uppercase;
+    /* A machined face catching the light along its top edge. */
+    background: linear-gradient(177deg, #FFFFFF 0%, #D8DDE1 38%, #9AA1A7 62%, #C6CCD1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .thesis {
+    margin: 28px 0 0;
+    max-width: 35ch;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--silver);
+  }
+  .thesis strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 62px 0; border-bottom: 1px solid var(--line); }
+
+  h2 {
+    margin: 0 0 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .lede { margin: 0 0 34px; max-width: 64ch; font-size: 1.0625rem; color: var(--silver); }
+  .lede b { color: var(--text); font-weight: 600; }
+
+  /* ---------- palette ---------- */
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(166px, 1fr));
+    gap: 0;
+    background: transparent;
+    border: 1px solid var(--line);
+  }
+  .sw { background: var(--panel); box-shadow: inset -1px -1px 0 var(--line); }
+  .sw .chip { height: 84px; border-bottom: 1px solid var(--line); }
+  .sw .meta { padding: 12px 14px 14px; }
+  .sw .role { font-size: 13px; font-weight: 600; }
+  .sw .hex, .sw .ratio { display: block; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+  .sw .ratio { margin-top: 3px; color: #6E767C; }
+
+  /* ---------- type ---------- */
+
+  .specimen { display: grid; gap: 26px; }
+  .readout {
+    font-size: clamp(3rem, 11vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+  .readout .unit { font-size: 0.24em; font-weight: 600; color: var(--dim); margin-left: 0.16em; letter-spacing: 0; }
+  .type-row { display: flex; flex-wrap: wrap; gap: 10px 30px; align-items: baseline; }
+  .note { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #6E767C; }
+  .t-display { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; }
+  .t-body { font-size: 1rem; color: var(--silver); max-width: 58ch; }
+  .t-micro { font-family: var(--mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim); }
+
+  /* ---------- phones ---------- */
+
+  .phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    background: var(--base);
+    border: 1px solid var(--line-up);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 720px;
+    box-shadow: inset 0 1px 0 var(--edge-top);
+  }
+
+  .phone-cap { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); padding: 0 0 9px 2px; }
+
+  .status {
+    display: flex; justify-content: space-between;
+    padding: 10px 16px 4px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em;
+    color: var(--dim); font-variant-numeric: tabular-nums;
+  }
+
+  .screen { flex: 1; padding: 6px 13px 0; overflow: hidden; }
+
+  .scr-head { padding: 12px 4px 15px; }
+  .scr-head .kick { font-family: var(--mono); font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim); }
+  .scr-head h3 { margin: 4px 0 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+  .scr-head p { margin: 2px 0 0; font-size: 13px; color: var(--dim); }
+
+  /* machined panel */
+  .block { border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+
+  .block-top { padding: 12px 14px 10px; }
+  .block-top .name { font-size: 14px; font-weight: 600; }
+  .block-top .presc { margin-top: 3px; font-family: var(--mono); font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+  .hint {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+    border-top: 1px solid var(--edge-top);
+    border-bottom: 1px solid rgba(0,0,0,0.4);
+    font-size: 11.5px; color: var(--silver);
+  }
+  .hint .arrow { font-family: var(--mono); color: var(--chrome); font-weight: 600; }
+
+  /* set rows */
+
+  .set { display: flex; align-items: center; gap: 6px; padding: 9px 7px 9px 5px; border-top: 1px solid rgba(255,255,255,0.045); position: relative; }
+  .set:first-of-type { border-top: 0; }
+
+  .set .idx { width: 25px; flex: 0 0 25px; text-align: center; font-family: var(--mono); font-size: 12px; color: #6E767C; font-variant-numeric: tabular-nums; }
+
+  .fields { display: flex; flex: 1; min-width: 0; gap: 4px; }
+  .fld { flex: 1; min-width: 0; }
+  .fld .lbl { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.11em; text-transform: uppercase; color: #6E767C; padding-left: 2px; margin-bottom: 3px; }
+
+  /* an inset machined channel, lit from above like everything else */
+  .fld .box {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 42px; padding: 0 1px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #121416 0%, #1B1E21 100%);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.65), inset 0 -1px 0 rgba(255,255,255,0.05);
+  }
+  /* knurl: the grip texture on a real adjustment control */
+  .fld .step {
+    width: 24px; flex: 0 0 24px; height: 34px;
+    display: grid; place-items: center;
+    border-radius: 3px;
+    font-family: var(--mono); font-size: 14px; color: var(--silver); line-height: 1;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0) 1px 3px),
+      linear-gradient(180deg, #23262A, #1A1D20);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 1px rgba(0,0,0,0.5);
+  }
+  .fld .val {
+    font-family: var(--mono); font-size: 17px; font-weight: 500;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+    text-align: center; flex: 1; min-width: 0;
+  }
+
+  .check {
+    width: 44px; height: 44px; flex: 0 0 44px;
+    border-radius: 999px;
+    display: grid; place-items: center;
+    margin-top: 11px;
+    background: linear-gradient(180deg, #23262A, #171A1C);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .check svg { width: 19px; height: 19px; stroke: #6E767C; }
+
+  /* logged: the face is polished and now returns light */
+  .set.done { background: rgba(255,255,255,0.028); }
+  .set.done .idx, .set.done .val { color: var(--text); }
+  .set.done .check {
+    background: linear-gradient(180deg, #FFFFFF 0%, #D2D8DC 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 6px rgba(232,236,239,0.22);
+  }
+  .set.done .check svg { stroke: #0C0D0E; }
+
+  /* the record: a specular sweep crossing the row, the way light crosses
+     polished metal when you turn it. Nothing else in the app does this. */
+  .set.record {
+    background:
+      linear-gradient(104deg,
+        rgba(255,255,255,0.05) 0%,
+        rgba(255,255,255,0.05) 24%,
+        rgba(255,255,255,0.46) 42%,
+        rgba(255,255,255,0.80) 50%,
+        rgba(255,255,255,0.46) 58%,
+        rgba(255,255,255,0.05) 76%,
+        rgba(255,255,255,0.05) 100%),
+      linear-gradient(180deg, #30353A, #1C2023);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.5);
+  }
+  .set.record .idx { color: #2A2E31; }
+  .set.record .fld .lbl { color: #4A5055; }
+  .set.record .fld .box { background: rgba(12,13,14,0.30); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
+  .set.record .fld .step { background: rgba(12,13,14,0.22); box-shadow: none; color: #3A4046; }
+  .set.record .fld .val { color: #0C0D0E; font-weight: 600; }
+  .set.record .check { background: linear-gradient(180deg, #16181A, #0C0D0E); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); }
+  .set.record .check svg { stroke: var(--chrome); }
+
+  .stamp {
+    position: absolute; top: -8px; left: 28px;
+    background: linear-gradient(180deg, #FFFFFF, #CED4D9);
+    color: #0C0D0E;
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.17em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.6);
+  }
+
+  /* progress + timer */
+
+  .bar { height: 4px; border-radius: 3px; overflow: hidden; margin: 2px 4px 14px; background: linear-gradient(180deg,#0E1012,#1A1D20); box-shadow: inset 0 1px 2px rgba(0,0,0,0.6); }
+  .bar i { display: block; height: 100%; width: 58%; background: linear-gradient(180deg,#FFFFFF,#BFC6CB); }
+
+  .timer {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 15px;
+    background: linear-gradient(180deg, #1C1F22, #131517);
+    box-shadow: inset 0 1px 0 var(--edge-top);
+  }
+  .timer .count {
+    font-family: var(--mono); font-size: 25px; font-weight: 600;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.03em;
+    color: var(--chrome); text-shadow: 0 0 14px rgba(232,236,239,0.3);
+  }
+  .timer .ctl { margin-left: auto; display: flex; gap: 5px; }
+  .timer .ctl span {
+    font-family: var(--mono); font-size: 10.5px; color: var(--silver);
+    padding: 7px 9px; border-radius: 4px;
+    background: linear-gradient(180deg,#23262A,#1A1D20);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 1px rgba(0,0,0,0.5);
+  }
+
+  /* tabs */
+
+  .tabs {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    padding: 7px 0 13px;
+    background: linear-gradient(180deg, #1A1D20, #121416);
+    box-shadow: inset 0 1px 0 var(--edge-top);
+  }
+  .tabs div { text-align: center; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.11em; text-transform: uppercase; color: #6E767C; }
+  .tabs div.on { color: var(--chrome); }
+  .tabs div b { display: block; font-size: 15px; margin-bottom: 3px; line-height: 1; }
+
+  /* charts */
+
+  .chart { border-radius: 10px; padding: 15px 14px 12px; margin-bottom: 10px; }
+  .ctop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 13px; }
+  .clab { font-family: var(--mono); font-size: 10px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--dim); }
+  .cval { font-size: 28px; font-weight: 700; letter-spacing: -0.035em; margin-top: 3px; }
+  .cval span { font-size: 13px; font-weight: 500; color: var(--dim); }
+  .cdelta { font-family: var(--mono); font-size: 11px; color: var(--silver); font-variant-numeric: tabular-nums; }
+
+  .plot { height: 110px; position: relative; }
+  .plot .grid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .plot .grid i { height: 1px; background: rgba(255,255,255,0.05); }
+  .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .xaxis { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.07em; color: #6E767C; }
+
+  .bars { display: flex; align-items: flex-end; gap: 7px; height: 90px; }
+  .bars div { flex: 1; border-radius: 2px 2px 0 0; background: var(--plot-mid); }
+  /* Under the band is an outline, not a dim fill. A fill dark enough to sit
+     3:1 below the satin step lands at 1.31:1 on the panel, which is to say
+     invisible. Form carries the distinction instead of lightness alone. */
+  .bars div.lo { background: transparent; border: 1px solid var(--line-up); border-bottom: 0; }
+  .bars div.hi { background: linear-gradient(180deg,#FFFFFF,#CDD3D8); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 11px; }
+  .legend span { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: block; }
+
+  /* plan */
+
+  .prow { display: flex; align-items: center; gap: 10px; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .prow .ord { font-family: var(--mono); font-size: 11px; color: #6E767C; width: 16px; font-variant-numeric: tabular-nums; }
+  .prow .pn { flex: 1; min-width: 0; }
+  .prow .pn b { display: block; font-size: 14px; font-weight: 600; }
+  .prow .pn span { font-family: var(--mono); font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .prow .car { color: #6E767C; }
+  .prow.rest { background: none; border: 1px dashed var(--line-up); box-shadow: none; }
+
+  /* buttons */
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 50px; border-radius: 6px;
+    font-size: 15px; font-weight: 600; letter-spacing: -0.005em;
+  }
+  .btn.pri {
+    background: linear-gradient(180deg, #FFFFFF 0%, #D2D8DC 100%);
+    color: #0C0D0E;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .btn.sec {
+    background: linear-gradient(180deg, #23262A, #1A1D20);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .btn.des {
+    background: linear-gradient(180deg, #CC4133 0%, #9E1C12 100%);
+    color: #FFFFFF;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* decisions */
+
+  .decisions { display: grid; gap: 0; border: 1px solid var(--line); }
+  .dec { background: var(--panel); padding: 21px 23px; box-shadow: inset 0 -1px 0 var(--line); }
+  .dec .q { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .dec h4 { margin: 0 0 8px; font-size: 15px; font-weight: 700; letter-spacing: -0.015em; }
+  .dec p { margin: 0; font-size: 14.5px; color: var(--silver); max-width: 68ch; }
+
+  .banned { display: flex; flex-wrap: wrap; gap: 8px; }
+  .banned span {
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+    border: 1px solid var(--line-up); border-radius: 4px; padding: 7px 11px;
+    text-decoration: line-through; text-decoration-color: #5A6166;
+  }
+
+  .cost { margin-top: 26px; border-left: 2px solid var(--chrome); padding: 2px 0 2px 18px; }
+  .cost b { display: block; font-size: 14.5px; margin-bottom: 4px; }
+  .cost p { margin: 0; font-size: 14.5px; color: var(--silver); max-width: 66ch; }
+
+  @media (max-width: 760px) {
+    .mast { padding: 46px 0 34px; }
+    section { padding: 46px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <p class="tag">Liftlog / design concept 02 of 03 &#183; metallic</p>
+    <h1>Anodised</h1>
+    <p class="thesis">
+      Where Plate treats silver as a flat value, this one treats it as a
+      <strong>surface that returns light</strong>. Satin aluminium, brushed horizontally, every
+      raised face lit from the same point above. Controls look machined because they behave like
+      machined things: an input is a channel cut into the panel, a stepper is knurled, and a record
+      is the moment the metal catches.
+    </p>
+  </header>
+
+  <section>
+    <h2>Palette</h2>
+    <p class="lede">
+      The same neutral family as Plate, pulled a touch cooler and bluer so it reads as aluminium
+      rather than graphite. The accent is not pure white but <b>chrome</b>, #E8ECEF, because a real
+      polished face never quite reaches paper white, and the small gap is what makes the sheen on
+      top of it legible.
+    </p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#0C0D0E"></div><div class="meta"><span class="role">Base</span><span class="hex">#0C0D0E</span><span class="ratio">anodised black</span></div></div>
+      <div class="sw"><div class="chip satin"></div><div class="meta"><span class="role">Panel</span><span class="hex">#16181A</span><span class="ratio">satin face</span></div></div>
+      <div class="sw"><div class="chip" style="background:#1F2225"></div><div class="meta"><span class="role">Raised</span><span class="hex">#1F2225</span><span class="ratio">keys, steppers</span></div></div>
+      <div class="sw"><div class="chip" style="background:#3A4046"></div><div class="meta"><span class="role">Edge</span><span class="hex">#3A4046</span><span class="ratio">chamfer, outline</span></div></div>
+      <div class="sw"><div class="chip" style="background:#828A90"></div><div class="meta"><span class="role">Dim</span><span class="hex">#828A90</span><span class="ratio">5.55:1 on base</span></div></div>
+      <div class="sw"><div class="chip" style="background:#AEB4B9"></div><div class="meta"><span class="role">Silver</span><span class="hex">#AEB4B9</span><span class="ratio">9.29:1 on base</span></div></div>
+      <div class="sw"><div class="chip" style="background:#E8ECEF"></div><div class="meta"><span class="role">Chrome / accent</span><span class="hex">#E8ECEF</span><span class="ratio">16.37:1 on base</span></div></div>
+      <div class="sw"><div class="chip" style="background:linear-gradient(180deg,#CC4133,#9E1C12)"></div><div class="meta"><span class="role">Hazard</span><span class="hex">#CC4133 &rarr; #9E1C12</span><span class="ratio">4.80:1 worst point</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Type</h2>
+    <p class="lede">
+      <b>Barlow</b> replaces Archivo here. It is a low-contrast grotesque drawn from Californian
+      transit and machinery signage, slightly narrower and with softer terminals, which keeps a
+      heavily textured surface from feeling harsh. <b>IBM Plex Mono</b> holds every editable number.
+    </p>
+    <div class="specimen">
+      <div class="readout">57.5<span class="unit">kg</span></div>
+      <div class="type-row">
+        <span style="font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.375rem;font-weight:500;letter-spacing:-0.02em">57.5</span>
+        <span class="note">row readout &#183; mono, tabular</span>
+      </div>
+      <div class="type-row"><span class="t-display">Next up: Push A</span><span class="note">Barlow 700 / -0.03em</span></div>
+      <div class="type-row"><span class="t-body">Last time 57.5 kg x 10, 9, 8. Top set held two clean reps in the band, so it goes up.</span></div>
+      <div class="type-row"><span class="t-micro">Working set &#183; 4 of 4</span><span class="note">Plex Mono 11px / 0.13em</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Screens</h2>
+    <p class="lede">
+      Watch the light. Every raised element carries a 1px highlight on its top edge and a shadow on
+      its bottom, every recessed one carries the reverse. That single rule is what makes the inputs
+      read as cut into the panel instead of drawn on it.
+    </p>
+
+    <div class="phones">
+
+      <!-- TODAY -->
+      <div>
+        <p class="phone-cap">Today &#8212; mid session</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>PUSH A &#183; 00:42:18</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <p class="kick">Day 1 of 6</p>
+              <h3>Push A</h3>
+              <p>14 of 24 sets</p>
+            </div>
+            <div class="bar"><i></i></div>
+
+            <div class="block satin brushed">
+              <div class="block-top">
+                <div class="name">Incline Barbell Press</div>
+                <div class="presc">4 x 6-8 &#183; 150s rest &#183; +2.5 kg</div>
+              </div>
+              <div class="hint"><span class="arrow">&uarr;</span> Hit 8, 8, 7 at 55 kg. Go to 57.5 kg.</div>
+
+              <div class="set done">
+                <div class="idx">1</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set record">
+                <span class="stamp">Record</span>
+                <div class="idx">2</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">9</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set">
+                <div class="idx">3</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set">
+                <div class="idx">4</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+            </div>
+
+            <div class="block satin brushed">
+              <div class="block-top">
+                <div class="name">Seated Dumbbell Shoulder Press</div>
+                <div class="presc">3 x 8-12 &#183; 120s rest &#183; +2.5 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timer">
+            <span class="count">1:47</span>
+            <div class="ctl"><span>&minus;15</span><span>Pause</span><span>Skip</span></div>
+          </div>
+          <div class="tabs">
+            <div class="on"><b>&#9632;</b>Today</div>
+            <div><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div>
+        <p class="phone-cap">Progress &#8212; satin, chrome, outline</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>12 WEEKS</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <p class="kick">Incline Barbell Press</p>
+              <h3>Estimated 1RM</h3>
+            </div>
+
+            <div class="chart satin brushed">
+              <div class="ctop">
+                <div>
+                  <div class="clab">Best e1RM</div>
+                  <div class="cval">72.6<span> kg</span></div>
+                </div>
+                <div class="cdelta">+4.1 / 12wk</div>
+              </div>
+              <div class="plot">
+                <div class="grid"><i></i><i></i><i></i><i></i></div>
+                <svg viewBox="0 0 300 110" preserveAspectRatio="none">
+                  <polyline points="4,90 46,84 88,72 130,74 172,56 214,43 256,29 296,17"
+                            fill="none" stroke="#E8ECEF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="296" cy="17" r="4" fill="#FFFFFF"/>
+                  <circle cx="214" cy="43" r="3.5" fill="#16181A" stroke="#AEB4B9" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>AUG 4</span><span>SEP 1</span><span>SEP 29</span><span>OCT 27</span></div>
+            </div>
+
+            <div class="chart satin brushed">
+              <div class="ctop">
+                <div>
+                  <div class="clab">Weekly sets &#183; Chest</div>
+                  <div class="cval">16</div>
+                </div>
+                <div class="cdelta">band 10-20</div>
+              </div>
+              <div class="bars">
+                <div class="lo" style="height:42%"></div>
+                <div style="height:55%"></div>
+                <div style="height:61%"></div>
+                <div style="height:58%"></div>
+                <div style="height:72%"></div>
+                <div class="hi" style="height:80%"></div>
+              </div>
+              <div class="xaxis"><span>W38</span><span>W39</span><span>W40</span><span>W41</span><span>W42</span><span>W43</span></div>
+              <div class="legend">
+                <span><i style="background:linear-gradient(180deg,#FFFFFF,#CDD3D8)"></i>This week</span>
+                <span><i style="background:#7A8085"></i>In band</span>
+                <span><i style="background:transparent;border:1px solid #3A4046"></i>Under</span>
+              </div>
+            </div>
+          </div>
+          <div class="tabs">
+            <div><b>&#9632;</b>Today</div>
+            <div class="on"><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAN -->
+      <div>
+        <p class="phone-cap">Plan &#8212; and the destructive confirm</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>6 DAYS</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <p class="kick">Rotation</p>
+              <h3>Plan</h3>
+              <p>Today walks these in order.</p>
+            </div>
+
+            <div class="prow satin"><span class="ord">1</span><span class="pn"><b>Push A</b><span>5 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow satin"><span class="ord">2</span><span class="pn"><b>Pull A</b><span>6 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow satin"><span class="ord">3</span><span class="pn"><b>Legs A</b><span>5 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow rest"><span class="ord">4</span><span class="pn"><b>Rest</b><span>rest day</span></span><span class="car">&rsaquo;</span></div>
+
+            <div class="satin brushed" style="margin-top:20px;padding:15px 14px;border-radius:10px">
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.13em;text-transform:uppercase;color:var(--dim);margin-bottom:11px">Delete Legs A?</div>
+              <p style="margin:0 0 15px;font-size:13px;color:var(--silver);line-height:1.5">
+                The day and its exercise list go. Workouts you already logged against it stay in your history.
+              </p>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div class="btn des">Delete this day</div>
+                <div class="btn sec">Keep it</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabs">
+            <div><b>&#9632;</b>Today</div>
+            <div><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div class="on"><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>The four decisions</h2>
+    <p class="lede">The same four questions Plate answers, answered by a surface instead of a value.</p>
+
+    <div class="decisions">
+      <div class="dec">
+        <span class="q">1 &#8212; What carries the primary action?</span>
+        <h4>A polished chrome key with a lit top edge.</h4>
+        <p>
+          16.37:1 against the base, and the bevel does the rest: it is the only element in view that
+          looks like it stands proud of the panel. Depth is doing the job hue used to do, which is
+          why this concept can afford an accent that is not the brightest possible value.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">2 &#8212; How does a record feel like a record?</span>
+        <h4>A specular sweep crosses the row.</h4>
+        <p>
+          A hard diagonal highlight passes over the face, the way light crosses polished metal when
+          you turn it in your hand, and the check inverts to a dark recess with a chrome tick. It is
+          the only animated specular in the app, so it cannot be confused with anything else. One
+          pass, 420ms, and it settles into a brighter satin that persists.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">3 &#8212; What do the charts encode with?</span>
+        <h4>Outline, satin, chrome.</h4>
+        <p>
+          #7A8085 in the band and chrome for the current week, 3.36:1 apart. The under-band step is
+          an <em>outlined</em> bar rather than a dark fill, because a fill dark enough to sit 3:1
+          below satin lands at 1.31:1 against the panel, which is invisible. Form carries that
+          distinction instead of lightness, and the legend names all three.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">4 &#8212; Where does danger go?</span>
+        <h4>A red key, built like every other key.</h4>
+        <p>
+          A #CC4133 to #9E1C12 face with a white label. The figure that matters on a graduated
+          fill is the <em>lightest</em> point, not the average: the first draft ran from #FF6256 and
+          put the label at 2.94:1 there, a clean failure hiding behind a comfortable-looking
+          midpoint. Re-stepped, the worst point on the key is 4.80:1. Same top-edge highlight and
+          drop shadow as the chrome one. It keeps the red you asked for this morning, and the shared construction
+          means it reads as the same kind of object rather than a sticker pasted on.
+        </p>
+      </div>
+    </div>
+
+    <div class="cost">
+      <b>What this costs you</b>
+      <p>
+        Gradients and inset shadows on every surface, which is more CSS to maintain and the easiest
+        of the three to get subtly wrong: one bevel lit from the wrong side and the whole illusion
+        collapses. It is also the furthest from the flat, matte discipline the rest of the app was
+        built on.
+      </p>
+    </div>
+  </section>
+
+  <section style="border-bottom:0">
+    <h2>Rejected</h2>
+    <p class="lede">Named so they do not creep back in during implementation.</p>
+    <div class="banned">
+      <span>chrome bevels on everything</span>
+      <span>glassmorphism</span>
+      <span>any second hue</span>
+      <span>#000000</span>
+      <span>light from two directions</span>
+      <span>gradients as decoration</span>
+      <span>skeuomorphic leather or carbon</span>
+      <span>dual-axis charts</span>
+      <span>a number on every point</span>
+      <span>dashed gridlines</span>
+      <span>icon-heading-text cards</span>
+      <span>em-dashes in UI copy</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

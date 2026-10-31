@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vector — Liftlog concept 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:    #060708;
+    --layer:   rgba(255,255,255,0.028);
+    --layer-2: rgba(255,255,255,0.055);
+    --hair:    rgba(255,255,255,0.08);
+    --hair-up: rgba(255,255,255,0.16);
+
+    --text:    #FBFCFD;
+    --silver:  #A8AEB4;
+    --dim:     #7A8086;
+
+    --plot-lo:  #343941;
+    --plot-mid: #878E95;
+
+    --sans: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A single distant source, top left. It is the only thing in the file that
+     is not a straight line, and it is what keeps the void from reading flat. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(90rem 60rem at 12% -8%, rgba(255,255,255,0.045), transparent 62%);
+  }
+  .wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 16px 120px; }
+
+  /* Refracting edge: a lit top edge and a 1px inner rim, which is what a real
+     pane of glass does and what a bare backdrop-filter never shows. */
+  .pane {
+    background: var(--layer);
+    border: 1px solid var(--hair);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* ---------- masthead ---------- */
+
+  .mast { padding: 78px 0 54px; border-bottom: 1px solid var(--hair); }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  h1 {
+    margin: 26px 0 0;
+    font-size: clamp(3.25rem, 12vw, 8.5rem);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--text);
+    text-shadow: 0 0 60px rgba(255,255,255,0.22);
+  }
+
+  .thesis {
+    margin: 34px 0 0;
+    max-width: 36ch;
+    font-size: 1.125rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--silver);
+  }
+  .thesis strong { color: var(--text); font-weight: 500; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 72px 0; border-bottom: 1px solid var(--hair); }
+
+  h2 {
+    margin: 0 0 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .lede { margin: 0 0 40px; max-width: 64ch; font-size: 1.0625rem; font-weight: 300; color: var(--silver); }
+  .lede b { color: var(--text); font-weight: 500; }
+
+  /* ---------- palette ---------- */
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(166px, 1fr));
+    gap: 0;
+    background: transparent;
+    border: 1px solid var(--hair);
+  }
+  .sw { box-shadow: inset -1px -1px 0 var(--hair); }
+  .sw .chip { height: 84px; border-bottom: 1px solid var(--hair); }
+  .sw .meta { padding: 13px 15px 15px; }
+  .sw .role { font-size: 13px; font-weight: 500; }
+  .sw .hex, .sw .ratio { display: block; font-family: var(--mono); font-size: 11px; font-weight: 300; color: var(--dim); }
+  .sw .ratio { margin-top: 3px; color: #656B70; }
+
+  /* ---------- type ---------- */
+
+  .specimen { display: grid; gap: 30px; }
+  .readout {
+    font-size: clamp(3rem, 11vw, 7rem);
+    font-weight: 300;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    text-shadow: 0 0 44px rgba(255,255,255,0.20);
+  }
+  .readout .unit { font-size: 0.2em; font-weight: 400; color: var(--dim); margin-left: 0.22em; letter-spacing: 0.12em; text-shadow: none; }
+  .type-row { display: flex; flex-wrap: wrap; gap: 10px 32px; align-items: baseline; }
+  .note { font-family: var(--mono); font-size: 10.5px; font-weight: 300; letter-spacing: 0.14em; text-transform: uppercase; color: #656B70; }
+  .t-display { font-size: 2rem; font-weight: 400; letter-spacing: -0.01em; }
+  .t-body { font-size: 1rem; font-weight: 300; color: var(--silver); max-width: 58ch; }
+  .t-micro { font-family: var(--mono); font-size: 11px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+
+  /* ---------- phones ---------- */
+
+  .phones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+
+  .phone {
+    width: 100%;
+    max-width: 390px;
+    background: var(--void);
+    border: 1px solid var(--hair);
+    border-radius: 22px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 720px;
+    position: relative;
+  }
+  .phone::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(28rem 20rem at 50% -6%, rgba(255,255,255,0.05), transparent 64%);
+  }
+  .phone > * { position: relative; z-index: 1; }
+
+  .phone-cap { font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); padding: 0 0 10px 2px; }
+
+  .status {
+    display: flex; justify-content: space-between;
+    padding: 12px 18px 4px;
+    font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.14em;
+    color: var(--dim); font-variant-numeric: tabular-nums;
+  }
+
+  .screen { flex: 1; padding: 8px 14px 0; overflow: hidden; }
+
+  /* The header pairs a huge light title with an arc, not a bar. */
+  .scr-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 4px 20px; }
+  .scr-head .kick { font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+  .scr-head h3 { margin: 6px 0 0; font-size: 1.6rem; font-weight: 300; letter-spacing: -0.005em; line-height: 1; }
+  .scr-head p { margin: 5px 0 0; font-family: var(--mono); font-size: 10.5px; font-weight: 300; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+  .ring { width: 58px; height: 58px; flex: 0 0 58px; position: relative; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .pct {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 300;
+    font-variant-numeric: tabular-nums; color: var(--text);
+  }
+
+  /* exercise block */
+
+  .block { border-radius: 16px; margin-bottom: 11px; overflow: hidden; }
+  .block-top { padding: 14px 15px 11px; }
+  .block-top .name { font-size: 14px; font-weight: 500; letter-spacing: -0.005em; }
+  .block-top .presc { margin-top: 4px; font-family: var(--mono); font-size: 10.5px; font-weight: 300; letter-spacing: 0.04em; color: var(--dim); font-variant-numeric: tabular-nums; }
+
+  .hint {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 15px;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+    font-size: 11.5px; font-weight: 300; color: var(--silver);
+  }
+  .hint .arrow { font-family: var(--mono); color: #FFFFFF; }
+
+  /* set rows */
+
+  .set { display: flex; align-items: center; gap: 7px; padding: 10px 8px 10px 6px; border-top: 1px solid rgba(255,255,255,0.05); position: relative; }
+  .set:first-of-type { border-top: 0; }
+
+  .set .idx { width: 24px; flex: 0 0 24px; text-align: center; font-family: var(--mono); font-size: 11px; font-weight: 300; color: #656B70; font-variant-numeric: tabular-nums; }
+
+  .fields { display: flex; flex: 1; min-width: 0; gap: 5px; }
+  .fld { flex: 1; min-width: 0; }
+  .fld .lbl { display: block; font-family: var(--mono); font-size: 8.5px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: #656B70; padding-left: 3px; margin-bottom: 4px; }
+  .fld .box {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 42px; padding: 0 2px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid var(--hair);
+  }
+  .fld .step { width: 23px; flex: 0 0 23px; text-align: center; font-family: var(--mono); font-size: 14px; font-weight: 300; color: var(--dim); line-height: 1; }
+  .fld .val { font-family: var(--mono); font-size: 17px; font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; text-align: center; flex: 1; min-width: 0; }
+
+  .check {
+    width: 44px; height: 44px; flex: 0 0 44px;
+    border-radius: 999px;
+    border: 1px solid var(--hair-up);
+    display: grid; place-items: center;
+    margin-top: 12px;
+    background: rgba(255,255,255,0.035);
+  }
+  .check svg { width: 18px; height: 18px; stroke: #656B70; stroke-width: 2; }
+
+  .set.done .idx, .set.done .val { color: var(--text); }
+  .set.done .check {
+    background: #FFFFFF; border-color: #FFFFFF;
+    box-shadow: 0 0 20px rgba(255,255,255,0.35);
+  }
+  .set.done .check svg { stroke: var(--void); }
+
+  /* the record: the row becomes a light source. Nothing is filled, nothing
+     inverts; the value itself emits, framed by two hairlines. */
+  .set.record {
+    border-top: 1px solid rgba(255,255,255,0.45);
+    border-bottom: 1px solid rgba(255,255,255,0.45);
+    background:
+      radial-gradient(22rem 7rem at 50% 50%, rgba(255,255,255,0.14), transparent 70%);
+  }
+  .set.record .idx { color: var(--text); }
+  .set.record .fld .box { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.07); }
+  .set.record .fld .val { color: #FFFFFF; font-weight: 500; text-shadow: 0 0 18px rgba(255,255,255,0.75); }
+  .set.record .check {
+    background: #FFFFFF; border-color: #FFFFFF;
+    box-shadow: 0 0 30px rgba(255,255,255,0.65), 0 0 60px rgba(255,255,255,0.3);
+  }
+  .set.record .check svg { stroke: var(--void); }
+
+  .stamp {
+    position: absolute; top: -8px; left: 28px;
+    background: var(--void);
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #FFFFFF;
+    font-family: var(--mono); font-size: 8.5px; font-weight: 400;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px;
+    text-shadow: 0 0 12px rgba(255,255,255,0.6);
+  }
+
+  /* timer: an arc, because a countdown is an angle */
+
+  .timer { display: flex; align-items: center; gap: 14px; padding: 12px 17px; border-top: 1px solid var(--hair); }
+  .timer .tring { width: 42px; height: 42px; flex: 0 0 42px; position: relative; }
+  .timer .tring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .timer .count { font-family: var(--mono); font-size: 23px; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; color: #FFFFFF; text-shadow: 0 0 22px rgba(255,255,255,0.45); }
+  .timer .ctl { margin-left: auto; display: flex; gap: 6px; }
+  .timer .ctl span {
+    font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.1em;
+    color: var(--silver); border: 1px solid var(--hair); border-radius: 999px; padding: 6px 11px;
+  }
+
+  /* tabs */
+
+  .tabs { display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid var(--hair); padding: 9px 0 15px; }
+  .tabs div { text-align: center; font-family: var(--mono); font-size: 9px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase; color: #656B70; }
+  .tabs div.on { color: #FFFFFF; text-shadow: 0 0 14px rgba(255,255,255,0.5); }
+  .tabs div b { display: block; font-size: 14px; margin-bottom: 4px; line-height: 1; }
+
+  /* charts */
+
+  .chart { border-radius: 16px; padding: 17px 15px 13px; margin-bottom: 11px; }
+  .ctop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+  .clab { font-family: var(--mono); font-size: 9.5px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+  .cval { font-size: 30px; font-weight: 300; letter-spacing: -0.015em; margin-top: 5px; font-variant-numeric: tabular-nums; }
+  .cval span { font-size: 12px; font-weight: 400; color: var(--dim); letter-spacing: 0.08em; }
+  .cdelta { font-family: var(--mono); font-size: 10.5px; font-weight: 300; color: var(--silver); font-variant-numeric: tabular-nums; }
+
+  .plot { height: 110px; position: relative; }
+  .plot .grid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .plot .grid i { height: 1px; background: rgba(255,255,255,0.05); }
+  .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .xaxis { display: flex; justify-content: space-between; margin-top: 9px; font-family: var(--mono); font-size: 9px; font-weight: 300; letter-spacing: 0.14em; color: #656B70; }
+
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; }
+  .bars div { flex: 1; border-radius: 2px 2px 0 0; background: var(--plot-mid); }
+  .bars div.lo { background: transparent; border: 1px solid var(--plot-lo); border-bottom: 0; }
+  .bars div.hi { background: #FFFFFF; box-shadow: 0 0 18px rgba(255,255,255,0.3); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 13px; }
+  .legend span { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 9px; font-weight: 300; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: block; }
+
+  /* plan */
+
+  .prow { display: flex; align-items: center; gap: 11px; border-radius: 16px; padding: 14px 15px; margin-bottom: 9px; }
+  .prow .ord { font-family: var(--mono); font-size: 10.5px; font-weight: 300; color: #656B70; width: 16px; font-variant-numeric: tabular-nums; }
+  .prow .pn { flex: 1; min-width: 0; }
+  .prow .pn b { display: block; font-size: 14px; font-weight: 500; }
+  .prow .pn span { font-family: var(--mono); font-size: 10.5px; font-weight: 300; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .prow .car { color: #656B70; }
+  .prow.rest { background: none; border: 1px dashed var(--hair); box-shadow: none; backdrop-filter: none; }
+
+  /* buttons */
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 999px; font-size: 15px; font-weight: 500; }
+  .btn.pri { background: #FFFFFF; color: var(--void); box-shadow: 0 0 34px rgba(255,255,255,0.3); }
+  .btn.sec { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--hair-up); }
+  .btn.des { background: #B8241A; color: #FFFFFF; box-shadow: 0 0 30px rgba(184,36,26,0.4); }
+
+  /* decisions */
+
+  .decisions { display: grid; gap: 0; border: 1px solid var(--hair); }
+  .dec { padding: 24px 26px; box-shadow: inset 0 -1px 0 var(--hair); background: rgba(255,255,255,0.018); }
+  .dec .q { display: block; font-family: var(--mono); font-size: 10px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin-bottom: 11px; }
+  .dec h4 { margin: 0 0 9px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+  .dec p { margin: 0; font-size: 14.5px; font-weight: 300; color: var(--silver); max-width: 68ch; }
+
+  .banned { display: flex; flex-wrap: wrap; gap: 8px; }
+  .banned span {
+    font-family: var(--mono); font-size: 11px; font-weight: 300; color: var(--dim);
+    border: 1px solid var(--hair); border-radius: 999px; padding: 7px 13px;
+    text-decoration: line-through; text-decoration-color: #4A5055;
+  }
+
+  .cost { margin-top: 30px; border-left: 1px solid rgba(255,255,255,0.45); padding: 2px 0 2px 20px; }
+  .cost b { display: block; font-size: 14.5px; font-weight: 500; margin-bottom: 5px; }
+  .cost p { margin: 0; font-size: 14.5px; font-weight: 300; color: var(--silver); max-width: 66ch; }
+
+  @media (max-width: 760px) {
+    .mast { padding: 52px 0 38px; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <p class="tag">Liftlog / design concept 03 of 03 &#183; futuristic</p>
+    <h1>Vector</h1>
+    <p class="thesis">
+      Not chrome and not neon. The future this borrows from is <strong>optical</strong>: an
+      instrument that draws with light on an empty field. Hairlines instead of borders, arcs
+      instead of bars, type at 300 with air around it, and depth built from stacked translucent
+      planes that each catch a rim of light along their top edge. A record does not change colour.
+      It <strong>emits</strong>.
+    </p>
+  </header>
+
+  <section>
+    <h2>Palette</h2>
+    <p class="lede">
+      Almost no fills at all. Surfaces are <b>white at 3 to 6 percent</b> over a near-black void,
+      so the palette is really one colour at eight opacities. That is the discipline that keeps this
+      from becoming the purple-glass look every generated interface reaches for.
+    </p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#060708"></div><div class="meta"><span class="role">Void</span><span class="hex">#060708</span><span class="ratio">substrate</span></div></div>
+      <div class="sw"><div class="chip" style="background:#0D0E10"></div><div class="meta"><span class="role">Plane 1</span><span class="hex">white 2.8%</span><span class="ratio">cards, rows</span></div></div>
+      <div class="sw"><div class="chip" style="background:#131517"></div><div class="meta"><span class="role">Plane 2</span><span class="hex">white 5.5%</span><span class="ratio">inputs</span></div></div>
+      <div class="sw"><div class="chip" style="background:#23262A"></div><div class="meta"><span class="role">Hairline</span><span class="hex">white 8%</span><span class="ratio">every edge</span></div></div>
+      <div class="sw"><div class="chip" style="background:#7A8086"></div><div class="meta"><span class="role">Dim</span><span class="hex">#7A8086</span><span class="ratio">5.05:1 on void</span></div></div>
+      <div class="sw"><div class="chip" style="background:#A8AEB4"></div><div class="meta"><span class="role">Silver</span><span class="hex">#A8AEB4</span><span class="ratio">9.00:1 on void</span></div></div>
+      <div class="sw"><div class="chip" style="background:#FFFFFF"></div><div class="meta"><span class="role">Light / accent</span><span class="hex">#FFFFFF</span><span class="ratio">20.16:1 on void</span></div></div>
+      <div class="sw"><div class="chip" style="background:#B8241A"></div><div class="meta"><span class="role">Hazard</span><span class="hex">#B8241A</span><span class="ratio">6.35:1 w/ white label</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Type</h2>
+    <p class="lede">
+      <b>Space Grotesk</b> at 300, which is the lightest weight any of the three concepts uses and
+      the thing that most changes the feel: wide, calm, slightly technical. Labels get
+      <b>0.2em</b> tracking, far more than the other two, because generous letter-spacing on small
+      caps is what reads as instrumentation rather than as a web app.
+    </p>
+    <div class="specimen">
+      <div class="readout">57.5<span class="unit">KG</span></div>
+      <div class="type-row">
+        <span style="font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.375rem;font-weight:400;letter-spacing:-0.01em">57.5</span>
+        <span class="note">row readout &#183; mono, tabular</span>
+      </div>
+      <div class="type-row"><span class="t-display">Next up: Push A</span><span class="note">Space Grotesk 400</span></div>
+      <div class="type-row"><span class="t-body">Last time 57.5 kg x 10, 9, 8. Top set held two clean reps in the band, so it goes up.</span></div>
+      <div class="type-row"><span class="t-micro">Working set &#183; 4 of 4</span><span class="note">Plex Mono 11px / 0.2em</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Screens</h2>
+    <p class="lede">
+      Note what is missing: there is no filled card anywhere. Every container is a 1px hairline with
+      a barely-there wash behind it, and the <b>only</b> solid white objects on the screen are the
+      things you have completed and the thing you are meant to press next.
+    </p>
+
+    <div class="phones">
+
+      <!-- TODAY -->
+      <div>
+        <p class="phone-cap">Today &#8212; mid session</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>PUSH A &#183; 00:42:18</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <div>
+                <p class="kick">Day 1 of 6</p>
+                <h3>Push A</h3>
+                <p>14 of 24 sets</p>
+              </div>
+              <div class="ring">
+                <svg viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="19.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+                  <circle cx="22" cy="22" r="19.5" fill="none" stroke="#FFFFFF" stroke-width="1.5"
+                          stroke-linecap="round" stroke-dasharray="122.5" stroke-dashoffset="51.5"/>
+                </svg>
+                <span class="pct">58</span>
+              </div>
+            </div>
+
+            <div class="block pane">
+              <div class="block-top">
+                <div class="name">Incline Barbell Press</div>
+                <div class="presc">4 x 6-8 &#183; 150s rest &#183; +2.5 kg</div>
+              </div>
+              <div class="hint"><span class="arrow">&uarr;</span> Hit 8, 8, 7 at 55 kg. Go to 57.5 kg.</div>
+
+              <div class="set done">
+                <div class="idx">1</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set record">
+                <span class="stamp">Record</span>
+                <div class="idx">2</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">9</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set">
+                <div class="idx">3</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+
+              <div class="set">
+                <div class="idx">4</div>
+                <div class="fields">
+                  <div class="fld"><span class="lbl">kg</span><div class="box"><span class="step">&minus;</span><span class="val">57.5</span><span class="step">+</span></div></div>
+                  <div class="fld"><span class="lbl">reps</span><div class="box"><span class="step">&minus;</span><span class="val">8</span><span class="step">+</span></div></div>
+                </div>
+                <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 L9.5 18 L20 6.5"/></svg></div>
+              </div>
+            </div>
+
+            <div class="block pane">
+              <div class="block-top">
+                <div class="name">Seated Dumbbell Shoulder Press</div>
+                <div class="presc">3 x 8-12 &#183; 120s rest &#183; +2.5 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timer">
+            <div class="tring">
+              <svg viewBox="0 0 44 44">
+                <circle cx="22" cy="22" r="19.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+                <circle cx="22" cy="22" r="19.5" fill="none" stroke="#FFFFFF" stroke-width="2"
+                        stroke-linecap="round" stroke-dasharray="122.5" stroke-dashoffset="35"/>
+              </svg>
+            </div>
+            <span class="count">1:47</span>
+            <div class="ctl"><span>&minus;15</span><span>Skip</span></div>
+          </div>
+          <div class="tabs">
+            <div class="on"><b>&#9632;</b>Today</div>
+            <div><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div>
+        <p class="phone-cap">Progress &#8212; drawn, not filled</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>12 WEEKS</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <div>
+                <p class="kick">Incline Barbell Press</p>
+                <h3>Estimated 1RM</h3>
+              </div>
+            </div>
+
+            <div class="chart pane">
+              <div class="ctop">
+                <div>
+                  <div class="clab">Best e1RM</div>
+                  <div class="cval">72.6<span> KG</span></div>
+                </div>
+                <div class="cdelta">+4.1 / 12wk</div>
+              </div>
+              <div class="plot">
+                <div class="grid"><i></i><i></i><i></i><i></i></div>
+                <svg viewBox="0 0 300 110" preserveAspectRatio="none">
+                  <polyline points="4,90 46,84 88,72 130,74 172,56 214,43 256,29 296,17"
+                            fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="296" cy="17" r="3.5" fill="#FFFFFF"/>
+                  <circle cx="296" cy="17" r="8" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+                  <circle cx="214" cy="43" r="3" fill="none" stroke="#A8AEB4" stroke-width="1.25"/>
+                </svg>
+              </div>
+              <div class="xaxis"><span>AUG 4</span><span>SEP 1</span><span>SEP 29</span><span>OCT 27</span></div>
+            </div>
+
+            <div class="chart pane">
+              <div class="ctop">
+                <div>
+                  <div class="clab">Weekly sets &#183; chest</div>
+                  <div class="cval">16</div>
+                </div>
+                <div class="cdelta">band 10-20</div>
+              </div>
+              <div class="bars">
+                <div class="lo" style="height:42%"></div>
+                <div style="height:55%"></div>
+                <div style="height:61%"></div>
+                <div style="height:58%"></div>
+                <div style="height:72%"></div>
+                <div class="hi" style="height:80%"></div>
+              </div>
+              <div class="xaxis"><span>W38</span><span>W39</span><span>W40</span><span>W41</span><span>W42</span><span>W43</span></div>
+              <div class="legend">
+                <span><i style="background:#FFFFFF"></i>This week</span>
+                <span><i style="background:#878E95"></i>In band</span>
+                <span><i style="background:transparent;border:1px solid #343941"></i>Under</span>
+              </div>
+            </div>
+          </div>
+          <div class="tabs">
+            <div><b>&#9632;</b>Today</div>
+            <div class="on"><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAN -->
+      <div>
+        <p class="phone-cap">Plan &#8212; and the destructive confirm</p>
+        <div class="phone">
+          <div class="status"><span>9:41</span><span>6 DAYS</span></div>
+          <div class="screen">
+            <div class="scr-head">
+              <div>
+                <p class="kick">Rotation</p>
+                <h3>Plan</h3>
+                <p>Today walks these in order</p>
+              </div>
+            </div>
+
+            <div class="prow pane"><span class="ord">1</span><span class="pn"><b>Push A</b><span>5 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow pane"><span class="ord">2</span><span class="pn"><b>Pull A</b><span>6 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow pane"><span class="ord">3</span><span class="pn"><b>Legs A</b><span>5 exercises</span></span><span class="car">&rsaquo;</span></div>
+            <div class="prow rest"><span class="ord">4</span><span class="pn"><b>Rest</b><span>rest day</span></span><span class="car">&rsaquo;</span></div>
+
+            <div class="pane" style="margin-top:22px;padding:17px 16px;border-radius:16px">
+              <div style="font-family:var(--mono);font-size:9.5px;font-weight:300;letter-spacing:0.2em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Delete Legs A?</div>
+              <p style="margin:0 0 17px;font-size:13px;font-weight:300;color:var(--silver);line-height:1.55">
+                The day and its exercise list go. Workouts you already logged against it stay in your history.
+              </p>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div class="btn des">Delete this day</div>
+                <div class="btn sec">Keep it</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabs">
+            <div><b>&#9632;</b>Today</div>
+            <div><b>&#9652;</b>Progress</div>
+            <div><b>&#9679;</b>Body</div>
+            <div class="on"><b>&#9636;</b>Plan</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>The four decisions</h2>
+    <p class="lede">The same four questions, answered with light instead of pigment or surface.</p>
+
+    <div class="decisions">
+      <div class="dec">
+        <span class="q">1 &#8212; What carries the primary action?</span>
+        <h4>The only solid object in a field of outlines.</h4>
+        <p>
+          A white pill at 20.16:1 with a soft outer bloom. Everywhere else is a 1px hairline over a
+          3 percent wash, so solidity itself becomes the signal. You do not have to look for the
+          button; it is the only thing that is actually there.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">2 &#8212; How does a record feel like a record?</span>
+        <h4>The row emits. Nothing fills and nothing inverts.</h4>
+        <p>
+          Two bright hairlines bracket the row, the value itself picks up a diffraction bloom, and
+          the check throws a wide halo. It is the quietest of the three answers and the most
+          distinctive, because glow in this concept is rationed to exactly two things: the running
+          timer and a record. Earned, not sprayed.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">3 &#8212; What do the charts encode with?</span>
+        <h4>Outline, silver, and emitting white.</h4>
+        <p>
+          #878E95 in the band and pure white for the current week, 3.32:1 apart, with the under-band
+          bar reduced to a hairline outline for the same reason as the metallic concept. The line
+          chart is 1.5px rather than 2px, and the live point gets a thin concentric ring instead of
+          a larger dot, which is how an instrument marks a reading.
+        </p>
+      </div>
+      <div class="dec">
+        <span class="q">4 &#8212; Where does danger go?</span>
+        <h4>A deep red pill, the one saturated thing in the system.</h4>
+        <p>
+          #B8241A with a white label at 6.35:1. Deeper than the reds in the other concepts, because
+          against a void with no other colour in it a bright red reads as an alarm going off rather
+          than as a button. It keeps its own faint bloom so it belongs to the same physics as
+          everything else.
+        </p>
+      </div>
+    </div>
+
+    <div class="cost">
+      <b>What this costs you</b>
+      <p>
+        <code>backdrop-filter</code> on every pane is the most expensive thing any of these three
+        asks of a phone GPU, and it is the one that would need measuring against the 90-plus
+        Lighthouse score before committing. Light weights at 300 also need testing on a real screen
+        in a dim room, where thin white type on near-black can shimmer.
+      </p>
+    </div>
+  </section>
+
+  <section style="border-bottom:0">
+    <h2>Rejected</h2>
+    <p class="lede">Named so they do not creep back in during implementation.</p>
+    <div class="banned">
+      <span>cyan and purple glow</span>
+      <span>the AI gradient</span>
+      <span>blur with no rim light</span>
+      <span>neon everything</span>
+      <span>#000000</span>
+      <span>sci-fi corner brackets</span>
+      <span>animated scanlines</span>
+      <span>glow on idle elements</span>
+      <span>dual-axis charts</span>
+      <span>a number on every point</span>
+      <span>dashed gridlines</span>
+      <span>em-dashes in UI copy</span>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
